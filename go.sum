@@ -67,6 +67,8 @@ github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
+github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
+github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/strongo/dalgo v0.0.19 h1:pj/rnMv5oryTI9cxvuERYhN3Nm0LquU23K2W6vDZYjM=
 github.com/strongo/dalgo v0.0.19/go.mod h1:czR+WjWl0RUVNaXeNmQJa0CK+97ImgVvuXpqBN8dUyk=
 github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20 h1:rzmka7ykAIt2QWNIyGVbqob3XtFSFwrw/qOyrHb29Qc=
