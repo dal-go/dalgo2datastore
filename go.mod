@@ -7,7 +7,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.2
 	github.com/strongo/dalgo v0.0.19
-	github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20
+	github.com/strongo/log v0.0.1
 	google.golang.org/appengine/v2 v2.0.2
 )
 
