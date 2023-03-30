@@ -1,10 +1,10 @@
-package gaedb
+package dalgo2gaedatastore
 
 import (
 	"context"
 	"github.com/pkg/errors"
-	"github.com/strongo/dalgo"
-	"google.golang.org/appengine/datastore"
+	"github.com/stretchr/testify/assert"
+	"github.com/strongo/dalgo/dal"
 	"testing"
 )
 
@@ -14,36 +14,30 @@ func TestNewDatabase(t *testing.T) {
 		t.Errorf("v == nil")
 	}
 	switch v.(type) {
-	case gaeDatabase: // OK
+	case database: // OK
 	default:
 		t.Errorf("unexpected DB type: %T", v)
 	}
 }
 
 func TestDatabase_RunInTransaction(t *testing.T) {
-	dbInstance := gaeDatabase{}
+	dbInstance := database{}
 	i, j := 0, 0
 
 	var xg bool
 
-	RunInTransaction = func(c context.Context, f func(c context.Context, tx dalgo.Transaction) error, opts *datastore.TransactionOptions) error {
-		if opts == nil {
-			if xg {
-				t.Errorf("Expected XG==%v", xg)
-			}
-		} else if opts.XG != xg {
-			t.Errorf("Expected XG==%v, got: %v", xg, opts.XG)
-		}
+	RunInTransaction = func(c context.Context, tx transaction, f func(tc context.Context) error) error {
+		assert.Equal(t, xg, tx.datastoreTxOptions.XG, "XG")
 		j++
-		return f(c, nil)
+		return f(c)
 	}
 
 	t.Run("xg=true", func(t *testing.T) {
 		xg = true
-		err := dbInstance.RunInTransaction(context.Background(), func(c context.Context, tx dalgo.Transaction) error {
+		err := dbInstance.RunReadonlyTransaction(context.Background(), func(c context.Context, tx dal.ReadTransaction) error {
 			i++
 			return nil
-		}, dalgo.WithCrossGroup())
+		}, dal.TxWithCrossGroup())
 
 		if err != nil {
 			t.Errorf("Got unexpected error: %v", err)
@@ -60,7 +54,7 @@ func TestDatabase_RunInTransaction(t *testing.T) {
 	t.Run("xg=false", func(t *testing.T) {
 		i, j = 0, 0
 		xg = false
-		err := dbInstance.RunInTransaction(context.Background(), func(c context.Context, tx dalgo.Transaction) error {
+		err := dbInstance.RunReadonlyTransaction(context.Background(), func(c context.Context, tx dal.ReadTransaction) error {
 			i++
 			return errors.New("Test1")
 		})

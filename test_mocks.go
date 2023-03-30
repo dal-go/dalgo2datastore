@@ -1,29 +1,37 @@
-package gaedb
+package dalgo2gaedatastore
 
 import (
-	"github.com/strongo/dalgo"
+	"github.com/golang/mock/gomock"
+	"github.com/strongo/dalgo/dal"
+	"testing"
+
 	//"github.com/strongo/log"
 	"context"
-	"github.com/strongo/dalgo/mockdb"
+	"github.com/strongo/dalgo/mock_dal"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	"os"
 )
 
 // NewMockKeyFromDatastoreKey create new mock key
-func NewMockKeyFromDatastoreKey(key *datastore.Key) mockdb.MockKey {
-	return mockdb.MockKey{Kind: key.Kind(), IntID: key.IntID(), StrID: key.StringID()}
+func NewMockKeyFromDatastoreKey(key *datastore.Key) *dal.Key {
+	if id := key.StringID(); id != "" {
+		return dal.NewKeyWithID(key.Kind(), id)
+	} else {
+		return dal.NewKeyWithID(key.Kind(), key.IntID())
+	}
 }
 
 // SetupNdsMock sets NDS mock
-func SetupNdsMock() {
+func SetupNdsMock(t *testing.T) {
 	if err := os.Setenv("GAE_LONG_APP_ID", "debtstracker"); err != nil {
 		panic(err)
 	}
 	if err := os.Setenv("GAE_PARTITION", "DEVTEST"); err != nil {
 		panic(err)
 	}
-	mockDB = mockdb.NewMockDB(onSave, onLoad)
+	c := gomock.NewController(t)
+	mockDB = mock_dal.NewMockDatabase(c)
 
 	Get = func(c context.Context, key *datastore.Key, val interface{}) error {
 		panic("not implemented")
@@ -88,7 +96,7 @@ func SetupNdsMock() {
 	}
 
 	PutMulti = func(c context.Context, keys []*datastore.Key, vals interface{}) ([]*datastore.Key, error) {
-		entityHolders := vals.([]dalgo.Record)
+		entityHolders := vals.([]dal.Record)
 		var err error
 		var errs []error
 		for i, key := range keys {
@@ -104,10 +112,10 @@ func SetupNdsMock() {
 	}
 }
 
-func onSave(entityHolder dalgo.Record) (dalgo.Record, error) {
+func onSave(entityHolder dal.Record) (dal.Record, error) {
 	return entityHolder, nil
 }
 
-func onLoad(entityHolder dalgo.Record) (dalgo.Record, error) {
+func onLoad(entityHolder dal.Record) (dal.Record, error) {
 	return entityHolder, nil
 }

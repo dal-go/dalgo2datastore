@@ -1,4 +1,4 @@
-package gaedb
+package dalgo2gaedatastore
 
 import (
 	"bytes"
