@@ -18,8 +18,11 @@ var Put = func(c context.Context, key *datastore.Key, val interface{}) (*datasto
 	isPartialKey := key.Incomplete()
 	if LoggingEnabled {
 		buf := new(bytes.Buffer)
-		logEntityProperties(buf, fmt.Sprintf("dbPut(%v) => properties:", key2str(key)), val)
-		log.Debugf(c, buf.String())
+		if err = logEntityProperties(buf, fmt.Sprintf("dbPut(%v) => properties:", key2str(key)), val); err != nil {
+			log.Errorf(c, "Put(%v) failed to log properties: %v", key2str(key), err)
+		} else {
+			log.Debugf(c, buf.String())
+		}
 	}
 	if key, err = dbPut(c, key, val); err != nil {
 		return key, errors.WithMessage(err, fmt.Sprintf("failed to put to db (key=%v)", key2str(key)))
@@ -33,10 +36,10 @@ func logEntityProperties(buf *bytes.Buffer, prefix string, val interface{}) (err
 	var props []datastore.Property
 	if propertyLoadSaver, ok := val.(datastore.PropertyLoadSaver); ok {
 		if props, err = propertyLoadSaver.Save(); err != nil {
-			return errors.WithMessage(err, "failed to call val.(datastore.PropertyLoadSaver).Save()")
+			return fmt.Errorf("failed to call val.(datastore.PropertyLoadSaver).Save(): %w", err)
 		}
 	} else if props, err = datastore.SaveStruct(val); err != nil {
-		return errors.WithMessage(err, fmt.Sprintf("failed to call datastore.SaveStruct()"))
+		return fmt.Errorf("failed to call datastore.SaveStruct(): %w", err)
 	}
 	fmt.Fprint(buf, prefix)
 	var prevPropName string

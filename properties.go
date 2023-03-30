@@ -65,7 +65,7 @@ func IsEmptyByteArray(p datastore.Property) bool {
 		return true
 	}
 	v := p.Value.([]uint8)
-	return v == nil || len(v) == 0
+	return len(v) == 0
 }
 
 // IsEmptyStringOrSpecificValue returns true if property value is empty string or has specific value

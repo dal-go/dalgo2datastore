@@ -1,14 +1,13 @@
 package dalgo2gaedatastore
 
 import (
-	"github.com/strongo/dalgo/mock_dal"
 	"google.golang.org/appengine/datastore"
 )
 
 var (
 	// LoggingEnabled a flag to enable or disable logging inside GAE DAL
 	LoggingEnabled = true // TODO: move to Context.WithValue()
-	mockDB         *mock_dal.MockDatabase
+	//mockDB         *mock_dal.MockDatabase
 
 	// NewIncompleteKey creates new incomplete key.
 	NewIncompleteKey = datastore.NewIncompleteKey

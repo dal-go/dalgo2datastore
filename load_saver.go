@@ -3,12 +3,11 @@ package dalgo2gaedatastore
 import (
 	"cloud.google.com/go/datastore"
 	"github.com/pkg/errors"
-	"github.com/strongo/dalgo/dal"
 )
 
 // SaverWrapper used to serialize struct to properties on saving
 type SaverWrapper struct {
-	record dal.Record
+	//record dal.Record
 }
 
 var _ datastore.PropertyLoadSaver = (*SaverWrapper)(nil)
@@ -18,7 +17,7 @@ func (wrapper SaverWrapper) Load([]datastore.Property) (err error) {
 	return errors.New("gaedb.SaverWrapper does not support Load() method")
 }
 
-// Save save props
+// Save saves props
 func (wrapper SaverWrapper) Save() (props []datastore.Property, err error) {
 	return
 }

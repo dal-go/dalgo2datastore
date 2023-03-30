@@ -135,7 +135,7 @@ func (database) insert(c context.Context, record dal.Record) (err error) {
 		panic(fmt.Sprintf("database.insert() called for key with incomplete ID: %+v", key))
 	}
 
-	key, err = Put(c, key, record.Data())
+	_, err = Put(c, key, record.Data())
 	return err
 }
 
@@ -208,7 +208,7 @@ func (database) GetMulti(c context.Context, records []dal.Record) error {
 	return nil
 }
 
-var xgTransaction = &datastore.TransactionOptions{XG: true}
+//var xgTransaction = &datastore.TransactionOptions{XG: true}
 
 var isInTransactionFlag = "is in transaction"
 var nonTransactionalContextKey = "non transactional context"
