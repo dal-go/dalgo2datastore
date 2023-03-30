@@ -9,6 +9,7 @@ require (
 	github.com/strongo/dalgo v0.0.19
 	github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20
 	google.golang.org/appengine v1.6.7
+	google.golang.org/appengine/v2 v2.0.2
 )
 
 require (
