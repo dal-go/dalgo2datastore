@@ -1,7 +1,7 @@
 package dalgo2gaedatastore
 
 import (
-	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/v2/datastore"
 )
 
 var (

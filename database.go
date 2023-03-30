@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/strongo/dalgo/dal"
 	"github.com/strongo/log"
-	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/v2/datastore"
 	"strconv"
 )
 

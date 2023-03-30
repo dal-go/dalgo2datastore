@@ -8,7 +8,6 @@ require (
 	github.com/stretchr/testify v1.8.2
 	github.com/strongo/dalgo v0.0.19
 	github.com/strongo/log v0.0.0-20180427205522-8c4c66a45d20
-	google.golang.org/appengine v1.6.7
 	google.golang.org/appengine/v2 v2.0.2
 )
 
@@ -31,6 +30,7 @@ require (
 	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.114.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230330200707-38013875ee22 // indirect
 	google.golang.org/grpc v1.54.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect

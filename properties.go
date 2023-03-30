@@ -3,7 +3,7 @@ package dalgo2gaedatastore
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/v2/datastore"
 	"time"
 )
 

@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/strongo/log"
-	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/v2/datastore"
 	"strconv"
 )
 

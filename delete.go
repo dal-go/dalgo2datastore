@@ -3,7 +3,7 @@ package dalgo2gaedatastore
 import (
 	"context"
 	"github.com/strongo/log"
-	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/v2/datastore"
 )
 
 // Delete record from DB
