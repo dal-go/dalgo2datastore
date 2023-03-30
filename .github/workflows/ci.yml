@@ -28,8 +28,6 @@ jobs:
 
       - run: go build ./...
 
-      - run: go test ./...
-
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -56,3 +54,8 @@ jobs:
 
           # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
           # skip-build-cache: true
+
+      - name: 'Set up Google Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - run: go test ./...
