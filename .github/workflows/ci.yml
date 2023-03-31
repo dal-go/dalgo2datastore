@@ -55,7 +55,11 @@ jobs:
           # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
           # skip-build-cache: true
 
-      - name: 'Set up Google Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        install_components: 'beta,cloud-datastore-emulator'
+
+      - name: Google Cloud Info
+        run: 'gcloud info'
 
       - run: go test ./...
