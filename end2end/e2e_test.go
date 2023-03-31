@@ -19,7 +19,7 @@ import (
 
 func TestEndToEnd(t *testing.T) {
 	log.Println("TestEndToEnd() started...")
-	cmd, cmdStdout, cmdStdErr := startDatastoreEmulator(t)
+	cmd, _, cmdStdErr := startDatastoreEmulator(t)
 	defer terminateDatastoreEmulator(t, cmd)
 	defer func() {
 		err := recover()
@@ -33,8 +33,10 @@ func TestEndToEnd(t *testing.T) {
 	select {
 	case <-handleEmulatorClosing(t, cmd):
 		emulatorExited = true
-	case <-waitForEmulatorReadiness(t, cmdStdout, &emulatorExited):
-		testEndToEnd(t)
+	case <-waitForEmulatorReadiness(&emulatorExited):
+		if !emulatorExited {
+			testEndToEnd(t)
+		}
 	}
 	time.Sleep(10 * time.Millisecond)
 }
@@ -73,7 +75,9 @@ func terminateDatastoreEmulator(t *testing.T, cmd *exec.Cmd) {
 	if resp, err := http.Get("http://localhost:8081/shutdown"); err != nil {
 		t.Error("Failed to shutdown Datastore emulator:", err)
 	} else {
-		defer resp.Body.Close()
+		defer func() {
+			_ = resp.Body.Close()
+		}()
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			t.Error("Failed to read response from shutdown Datastore emulator:", err)
@@ -85,6 +89,8 @@ func terminateDatastoreEmulator(t *testing.T, cmd *exec.Cmd) {
 	time.Sleep(1 * time.Second)
 }
 
+const gCloudProjectID = "dalgo"
+
 func startDatastoreEmulator(t *testing.T) (cmd *exec.Cmd, stdout, stderr *bytes.Buffer) {
 	stdout = new(bytes.Buffer)
 	stderr = new(bytes.Buffer)
@@ -94,6 +100,7 @@ func startDatastoreEmulator(t *testing.T) (cmd *exec.Cmd, stdout, stderr *bytes.
 	cmd = exec.Command("gcloud", "beta", "emulators", "datastore", "start")
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
+	cmd.Env = []string{"CLOUDSDK_CORE_PROJECT=" + gCloudProjectID}
 
 	t.Log("Starting Datastore emulator...")
 	if err := cmd.Start(); err != nil {
@@ -103,13 +110,13 @@ func startDatastoreEmulator(t *testing.T) (cmd *exec.Cmd, stdout, stderr *bytes.
 }
 
 func setDatastoreEnvVars() {
-	const projectID = "sneat-team"
 	const emulatorHost = "localhost:8081"
 	vars := map[string]string{
-		"GAE_APPLICATION":              projectID,
-		"GOOGLE_CLOUD_PROJECT":         projectID,
-		"DATASTORE_DATASET":            projectID,
-		"DATASTORE_PROJECT_ID":         projectID,
+		"CLOUDSDK_CORE_PROJECT":        gCloudProjectID,
+		"GAE_APPLICATION":              gCloudProjectID,
+		"GOOGLE_CLOUD_PROJECT":         gCloudProjectID,
+		"DATASTORE_DATASET":            gCloudProjectID,
+		"DATASTORE_PROJECT_ID":         gCloudProjectID,
 		"DATASTORE_EMULATOR_HOST":      emulatorHost,
 		"DATASTORE_EMULATOR_HOST_PATH": emulatorHost + "/datastore",
 		"DATASTORE_HOST":               "http://" + emulatorHost,
@@ -121,13 +128,13 @@ func setDatastoreEnvVars() {
 	}
 }
 
-func waitForEmulatorReadiness(t *testing.T, cmdOutput *bytes.Buffer, emulatorExited *bool) (emulatorIsReady chan bool) {
+func waitForEmulatorReadiness(emulatorExited *bool) (emulatorIsReady chan bool) {
 	emulatorIsReady = make(chan bool)
 	time.Sleep(time.Second)
 	go func() {
 		for {
 			_, err := http.Get("http://localhost:8081/") // On separate line for debug purposes
-			if err == nil {
+			if err == nil || *emulatorExited {
 				emulatorIsReady <- true
 				close(emulatorIsReady)
 				break
