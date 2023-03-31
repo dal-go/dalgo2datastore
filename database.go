@@ -33,10 +33,10 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err er
 	return database, err
 }
 
-func (db database) exists(c context.Context, recordKey *dal.Key) error {
-	var empty struct{}
-	return db.Get(c, dal.NewRecordWithData(recordKey, &empty))
-}
+//func (db database) exists(c context.Context, recordKey *dal.Key) error {
+//	var empty struct{}
+//	return db.Get(c, dal.NewRecordWithData(recordKey, &empty))
+//}
 
 func setRecordID(key *datastore.Key, record dal.Record) {
 	recordKey := record.Key()
