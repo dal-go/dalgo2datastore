@@ -53,23 +53,20 @@ func (db database) runInTransaction(c context.Context, opts []dal.TransactionOpt
 var _ dal.Transaction = (*transaction)(nil)
 var _ dal.ReadwriteTransaction = (*transaction)(nil)
 
+type partialKey struct {
+	dalgo   *dal.Key
+	pending *datastore.PendingKey
+}
+
 type transaction struct {
 	db             database
 	dalgoTxOptions dal.TransactionOptions
 	datastoreTx    *datastore.Transaction
-}
-
-func (tx transaction) GetMulti(ctx context.Context, records []dal.Record) error {
-	//TODO implement me
-	panic("implement me")
+	pendingKeys    []partialKey
 }
 
 func (tx transaction) Select(ctx context.Context, query dal.Select) (dal.Reader, error) {
 	return nil, errors.New("implement me")
-}
-
-func (tx transaction) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) error {
-	return errors.New("implement me")
 }
 
 func (tx transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
@@ -102,7 +99,7 @@ func (tx transaction) Set(c context.Context, record dal.Record) error {
 	return nil
 }
 
-func (tx transaction) SetMulti(c context.Context, records []dal.Record) (err error) { // TODO: Rename to PutMulti?
+func (tx transaction) SetMultiOld(c context.Context, records []dal.Record) (err error) { // TODO: Rename to PutMulti?
 
 	keys := make([]*datastore.Key, len(records))
 	values := make([]any, len(records))

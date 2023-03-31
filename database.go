@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/strongo/dalgo/dal"
-	"github.com/strongo/log"
 	"google.golang.org/api/option"
 )
 
@@ -34,57 +33,6 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err er
 	return database, err
 }
 
-func (db database) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) (err error) {
-	if record == nil {
-		panic("record == nil")
-	}
-	recordKey := record.Key()
-	kind := recordKey.Collection()
-	log.Debugf(c, "Insert(kind=%v)", kind)
-	data := record.Data()
-	if data == nil {
-		panic("data == nil")
-	}
-	options := dal.NewInsertOptions(opts...)
-	if generateID := options.IDGenerator(); generateID != nil {
-		exists := func(key *dal.Key) error {
-			return db.exists(c, recordKey)
-		}
-		insert := func(record dal.Record) error {
-			return db.insert(c, record)
-		}
-		return dal.InsertWithRandomID(c, record, generateID, 5, exists, insert)
-	}
-	return
-}
-
-func (db database) insert(c context.Context, record dal.Record) (err error) {
-	if record == nil {
-		panic("record == nil")
-	}
-	recordKey := record.Key()
-	kind := recordKey.Collection()
-	log.Debugf(c, "InsertWithRandomIntID(kind=%v)", kind)
-	entity := record.Data()
-	if entity == nil {
-		panic("record == nil")
-	}
-
-	wrapErr := func(err error) error {
-		return errors.WithMessage(err, "failed to create record with random str ID for: "+kind)
-	}
-	key, isIncomplete, err := getDatastoreKey(c, recordKey)
-	if err != nil {
-		return wrapErr(err)
-	}
-	if isIncomplete {
-		panic(fmt.Sprintf("database.insert() called for key with incomplete ID: %+v", key))
-	}
-
-	_, err = db.Client.Put(c, key, record.Data())
-	return err
-}
-
 func (db database) exists(c context.Context, recordKey *dal.Key) error {
 	var empty struct{}
 	return db.Get(c, dal.NewRecordWithData(recordKey, &empty))
@@ -105,7 +53,7 @@ var ErrKeyHasBothIds = errors.New("record has both string and int ids")
 // ErrEmptyKind indicates record holder returned empty kind
 var ErrEmptyKind = errors.New("record holder returned empty kind")
 
-func getDatastoreKey(c context.Context, recordKey *dal.Key) (key *datastore.Key, isIncomplete bool, err error) {
+func getDatastoreKey(c context.Context, recordKey *dal.Key) (key *datastore.Key, isPartial bool, err error) {
 	if recordKey == nil {
 		panic(recordKey == nil)
 	}
@@ -127,44 +75,6 @@ func getDatastoreKey(c context.Context, recordKey *dal.Key) (key *datastore.Key,
 		}
 	}
 	return
-}
-
-func (db database) GetMulti(c context.Context, records []dal.Record) error {
-	count := len(records)
-	keys := make([]*datastore.Key, count)
-	values := make([]any, count)
-	for i := range records {
-		record := records[i]
-		recordKey := record.Key()
-		kind := recordKey.Collection()
-		switch v := recordKey.ID.(type) {
-		case string:
-			keys[i] = datastore.NameKey(kind, v, nil)
-		case int64:
-			keys[i] = datastore.IDKey(kind, v, nil)
-		case int:
-			keys[i] = datastore.IDKey(kind, int64(v), nil)
-		}
-		values[i] = record.Data()
-	}
-	if err := db.Client.GetMulti(c, keys, values); err != nil {
-		switch err := err.(type) {
-		case datastore.MultiError:
-			if len(err) == count {
-				for i, e := range err {
-					record := records[i]
-					if e == datastore.ErrNoSuchEntity {
-						record.SetError(dal.NewErrNotFoundByKey(record.Key(), e))
-					} else if e != nil {
-						record.SetError(e)
-					}
-				}
-				return nil
-			}
-		}
-		return err
-	}
-	return nil
 }
 
 //var xgTransaction = &datastore.TransactionOptions{XG: true}

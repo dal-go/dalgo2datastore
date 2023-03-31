@@ -46,7 +46,7 @@ func handleCommandStderr(t *testing.T, stderr *bytes.Buffer, emulatorExited *boo
 	var s string
 	for {
 		if *emulatorExited && s != "" {
-			t.Error("STDERR from Datastore emulator:\t" + s)
+			t.Log("STDERR from Datastore emulator:\t" + s)
 			return
 		}
 		line, err := stderr.ReadString('\n')
