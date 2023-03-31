@@ -2,10 +2,10 @@ package dalgo2gaedatastore
 
 import (
 	"bytes"
+	"cloud.google.com/go/datastore"
 	"context"
 	"fmt"
 	"github.com/strongo/log"
-	"google.golang.org/appengine/v2/datastore"
 	"strconv"
 )
 
@@ -13,10 +13,10 @@ func key2str(key *datastore.Key) string {
 	if key == nil {
 		return "nil"
 	}
-	kind := key.Kind()
-	if intID := key.IntID(); intID != 0 {
+	kind := key.Kind
+	if intID := key.ID; intID != 0 {
 		return kind + ":int=" + strconv.FormatInt(intID, 10)
-	} else if strID := key.StringID(); strID != "" {
+	} else if strID := key.Name; strID != "" {
 		return kind + ":str=" + strID
 	} else {
 		return kind + ":new"

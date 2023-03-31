@@ -1,7 +1,7 @@
 package dalgo2gaedatastore
 
 import (
-	"google.golang.org/appengine/v2/datastore"
+	"cloud.google.com/go/datastore"
 )
 
 var (
@@ -10,16 +10,16 @@ var (
 	//mockDB         *mock_dal.MockDatabase
 
 	// NewIncompleteKey creates new incomplete key.
-	NewIncompleteKey = datastore.NewIncompleteKey
+	NewIncompleteKey = datastore.IncompleteKey
 
 	// NewKey creates new key.
-	NewKey = datastore.NewKey
+	NewKey = datastore.IDKey
 
-	dbRunInTransaction = datastore.RunInTransaction
-	dbGet              = datastore.Get
-	dbGetMulti         = datastore.GetMulti
-	dbPut              = datastore.Put
-	dbPutMulti         = datastore.PutMulti
-	dbDelete           = datastore.Delete
-	dbDeleteMulti      = datastore.DeleteMulti
+	//dbRunInTransaction = datastore.Transaction{}
+	//dbGet              = datastore.Get
+	//dbGetMulti         = datastore.GetMulti
+	//dbPut              = datastore.Put
+	//dbPutMulti         = datastore.PutMulti
+	//dbDelete           = datastore.Delete
+	//dbDeleteMulti      = datastore.DeleteMulti
 )

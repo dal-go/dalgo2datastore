@@ -1,18 +1,21 @@
 package dalgo2gaedatastore
 
 import (
+	"cloud.google.com/go/datastore"
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/strongo/dalgo/dal"
 	"github.com/strongo/log"
-	"google.golang.org/appengine/v2/datastore"
+	"google.golang.org/api/option"
 	"strconv"
 )
 
 var _ dal.Database = (*database)(nil)
 
 type database struct {
+	ProjectID string
+	Client    *datastore.Client
 }
 
 func (database) Select(ctx context.Context, query dal.Select) (dal.Reader, error) {
@@ -25,11 +28,14 @@ func (database) Upsert(c context.Context, record dal.Record) error {
 }
 
 // NewDatabase create database provider to Google Datastore
-func NewDatabase() dal.Database {
-	return database{}
+func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err error) {
+	var database database
+	database.ProjectID = projectID
+	database.Client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
+	return database, err
 }
 
-func (database) Get(c context.Context, record dal.Record) (err error) {
+func (db database) Get(c context.Context, record dal.Record) (err error) {
 	if record == nil {
 		panic("record == nil")
 	}
@@ -41,16 +47,17 @@ func (database) Get(c context.Context, record dal.Record) (err error) {
 		panic("can't get record by incomplete key")
 	}
 	entity := record.Data()
-	if err = Get(c, key, entity); err != nil {
+	if err = db.Client.Get(c, key, entity); err != nil {
 		if err == datastore.ErrNoSuchEntity {
 			err = dal.NewErrNotFoundByKey(record.Key(), err)
+			record.SetError(err)
 		}
 		return
 	}
 	return
 }
 
-func (database) Delete(c context.Context, recordKey *dal.Key) (err error) {
+func (db database) Delete(c context.Context, recordKey *dal.Key) (err error) {
 	if recordKey == nil {
 		panic("recordKey == nil")
 	}
@@ -61,13 +68,13 @@ func (database) Delete(c context.Context, recordKey *dal.Key) (err error) {
 	if isIncomplete {
 		panic("can't delete record by incomplete key")
 	}
-	if err = Delete(c, key); err != nil {
+	if err = db.Client.Delete(c, key); err != nil {
 		return
 	}
 	return
 }
 
-func (database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error) {
+func (db database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error) {
 	if len(recordKeys) == 0 {
 		return
 	}
@@ -82,7 +89,7 @@ func (database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error
 		}
 		keys[i] = key
 	}
-	if err = DeleteMulti(c, keys); err != nil {
+	if err = db.Client.DeleteMulti(c, keys); err != nil {
 		return
 	}
 	return
@@ -112,7 +119,7 @@ func (db database) Insert(c context.Context, record dal.Record, opts ...dal.Inse
 	return
 }
 
-func (database) insert(c context.Context, record dal.Record) (err error) {
+func (db database) insert(c context.Context, record dal.Record) (err error) {
 	if record == nil {
 		panic("record == nil")
 	}
@@ -135,7 +142,7 @@ func (database) insert(c context.Context, record dal.Record) (err error) {
 		panic(fmt.Sprintf("database.insert() called for key with incomplete ID: %+v", key))
 	}
 
-	_, err = Put(c, key, record.Data())
+	_, err = db.Client.Put(c, key, record.Data())
 	return err
 }
 
@@ -146,10 +153,10 @@ func (db database) exists(c context.Context, recordKey *dal.Key) error {
 
 func setRecordID(key *datastore.Key, record dal.Record) {
 	recordKey := record.Key()
-	if strID := key.StringID(); strID != "" {
+	if strID := key.Name; strID != "" {
 		recordKey.ID = strID
 	} else {
-		recordKey.ID = key.IntID()
+		recordKey.ID = key.ID
 	}
 }
 
@@ -168,13 +175,13 @@ func getDatastoreKey(c context.Context, recordKey *dal.Key) (key *datastore.Key,
 		err = ErrEmptyKind
 	} else {
 		if ref.ID == nil {
-			key = NewIncompleteKey(c, ref.Collection(), nil)
+			key = NewIncompleteKey(ref.Collection(), nil)
 		} else {
 			switch v := ref.ID.(type) {
 			case string:
-				key = NewKey(c, ref.Collection(), v, 0, nil)
+				key = datastore.NameKey(ref.Collection(), v, nil)
 			case int:
-				key = NewKey(c, ref.Collection(), "", (int64)(v), nil)
+				key = datastore.IDKey(ref.Collection(), (int64)(v), nil)
 			default:
 				err = fmt.Errorf("unsupported ID type: %T", ref.ID)
 			}
@@ -183,7 +190,7 @@ func getDatastoreKey(c context.Context, recordKey *dal.Key) (key *datastore.Key,
 	return
 }
 
-func (database) GetMulti(c context.Context, records []dal.Record) error {
+func (db database) GetMulti(c context.Context, records []dal.Record) error {
 	count := len(records)
 	keys := make([]*datastore.Key, count)
 	values := make([]any, count)
@@ -191,18 +198,31 @@ func (database) GetMulti(c context.Context, records []dal.Record) error {
 		record := records[i]
 		recordKey := record.Key()
 		kind := recordKey.Collection()
-		var intID int64
-		var strID string
 		switch v := recordKey.ID.(type) {
 		case string:
-			strID = v
+			keys[i] = datastore.NameKey(kind, v, nil)
+		case int64:
+			keys[i] = datastore.IDKey(kind, v, nil)
 		case int:
-			intID = (int64)(v)
+			keys[i] = datastore.IDKey(kind, int64(v), nil)
 		}
-		keys[i] = NewKey(c, kind, strID, intID, nil)
 		values[i] = record.Data()
 	}
-	if err := GetMulti(c, keys, values); err != nil {
+	if err := db.Client.GetMulti(c, keys, values); err != nil {
+		switch err := err.(type) {
+		case datastore.MultiError:
+			if len(err) == count {
+				for i, e := range err {
+					record := records[i]
+					if e == datastore.ErrNoSuchEntity {
+						record.SetError(dal.NewErrNotFoundByKey(record.Key(), e))
+					} else if e != nil {
+						record.SetError(e)
+					}
+				}
+				return nil
+			}
+		}
 		return err
 	}
 	return nil

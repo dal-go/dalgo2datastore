@@ -1,37 +1,47 @@
 package dalgo2gaedatastore
 
 import (
+	"cloud.google.com/go/datastore"
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/strongo/dalgo/dal"
 	"github.com/strongo/log"
-	"google.golang.org/appengine/v2/datastore"
 )
 
-func (database) RunReadonlyTransaction(ctx context.Context, f dal.ROTxWorker, options ...dal.TransactionOption) error {
-	tx := newTransaction(append(options, dal.TxWithReadonly()))
-	return RunInTransaction(ctx, tx, func(tc context.Context) error {
-		return f(tc, tx)
+func (db database) RunReadonlyTransaction(ctx context.Context, f dal.ROTxWorker, options ...dal.TransactionOption) error {
+	_, err := db.runInTransaction(ctx, append(options, dal.TxWithReadonly()), func(tx transaction) error {
+		return f(ctx, tx)
 	})
-}
-
-func (database) RunReadwriteTransaction(ctx context.Context, f dal.RWTxWorker, options ...dal.TransactionOption) error {
-	tx := newTransaction(options)
-	if tx.dalgoTxOptions.IsReadonly() {
-		return fmt.Errorf("asked to run readwrite transaction with readonly flag set")
+	if err != nil {
+		return err
 	}
-	return RunInTransaction(ctx, tx, func(tc context.Context) error {
-		return f(tc, tx)
-	})
+	return nil
 }
 
-func newTransaction(opts []dal.TransactionOption) (tx transaction) {
+func (db database) RunReadwriteTransaction(ctx context.Context, f dal.RWTxWorker, options ...dal.TransactionOption) error {
+	_, err := db.runInTransaction(ctx, options, func(tx transaction) error {
+		return f(ctx, tx)
+	})
+	return err
+}
+
+func (db database) runInTransaction(c context.Context, opts []dal.TransactionOption, f func(tx transaction) error) (cmt *datastore.Commit, err error) {
+	var tx transaction
+	tx.database = db
 	tx.dalgoTxOptions = dal.NewTransactionOptions(opts...)
-	tx.datastoreTxOptions.XG = tx.dalgoTxOptions.IsCrossGroup()
-	tx.datastoreTxOptions.Attempts = tx.dalgoTxOptions.Attempts()
-	tx.datastoreTxOptions.ReadOnly = tx.dalgoTxOptions.IsReadonly()
-	return
+	var dsTxOptions []datastore.TransactionOption
+	//tx.datastoreTxOptions.XG = tx.dalgoTxOptions.IsCrossGroup()
+	if tx.dalgoTxOptions.IsReadonly() {
+		dsTxOptions = append(dsTxOptions, datastore.ReadOnly)
+	}
+	if tx.dalgoTxOptions.IsCrossGroup() {
+		dsTxOptions = append(dsTxOptions, datastore.MaxAttempts(tx.dalgoTxOptions.Attempts()))
+	}
+	return db.Client.RunInTransaction(c, func(datastoreTx *datastore.Transaction) error {
+		tx.datastoreTx = datastoreTx
+		return f(tx)
+	}, dsTxOptions...)
 }
 
 var _ dal.Transaction = (*transaction)(nil)
@@ -39,23 +49,23 @@ var _ dal.ReadwriteTransaction = (*transaction)(nil)
 
 type transaction struct {
 	database
-	dalgoTxOptions     dal.TransactionOptions
-	datastoreTxOptions datastore.TransactionOptions
+	dalgoTxOptions dal.TransactionOptions
+	datastoreTx    *datastore.Transaction
 }
 
-func (t transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
+func (tx transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
-func (t transaction) UpdateMulti(c context.Context, keys []*dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
+func (tx transaction) UpdateMulti(c context.Context, keys []*dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
-func (t transaction) Options() dal.TransactionOptions {
-	return t.dalgoTxOptions
+func (tx transaction) Options() dal.TransactionOptions {
+	return tx.dalgoTxOptions
 }
 
-func (_ transaction) Set(c context.Context, record dal.Record) error {
+func (tx transaction) Set(c context.Context, record dal.Record) error {
 	data := record.Data()
 	log.Debugf(c, "data: %+v", data)
 	if data == nil {
@@ -67,13 +77,13 @@ func (_ transaction) Set(c context.Context, record dal.Record) error {
 		log.Errorf(c, "database.Update() called for incomplete key, will insert.")
 		panic("not implemented")
 		//return gaeDb.Insert(c, record, dal.NewInsertOptions(dal.WithRandomStringID(5)))
-	} else if _, err = Put(c, key, data); err != nil {
+	} else if _, err = Put(c, tx.Client, key, data); err != nil {
 		return errors.WithMessage(err, "failed to update "+key2str(key))
 	}
 	return nil
 }
 
-func (transaction) SetMulti(c context.Context, records []dal.Record) (err error) { // TODO: Rename to PutMulti?
+func (tx transaction) SetMulti(c context.Context, records []dal.Record) (err error) { // TODO: Rename to PutMulti?
 
 	keys := make([]*datastore.Key, len(records))
 	values := make([]any, len(records))
@@ -97,7 +107,18 @@ func (transaction) SetMulti(c context.Context, records []dal.Record) (err error)
 
 	// logKeys(c, "database.SetMulti", keys)
 
-	if keys, err = PutMulti(c, keys, values); err != nil {
+	if keys, err = PutMulti(c, tx.Client, keys, values); err != nil {
+		switch err := err.(type) {
+		case datastore.MultiError:
+			if len(err) == len(records) {
+				for i, e := range err {
+					if err != nil {
+						records[i].SetError(e)
+					}
+				}
+				return nil
+			}
+		}
 		return
 	}
 

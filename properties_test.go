@@ -1,8 +1,8 @@
 package dalgo2gaedatastore
 
 import (
+	"cloud.google.com/go/datastore"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/appengine/v2/datastore"
 	"testing"
 	"time"
 )

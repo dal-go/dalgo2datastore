@@ -1,9 +1,9 @@
 package dalgo2gaedatastore
 
 import (
+	"cloud.google.com/go/datastore"
 	"fmt"
 	"github.com/pkg/errors"
-	"google.golang.org/appengine/v2/datastore"
 	"time"
 )
 

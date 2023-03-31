@@ -2,15 +2,15 @@ package dalgo2gaedatastore
 
 import (
 	"bytes"
+	"cloud.google.com/go/datastore"
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/strongo/log"
-	"google.golang.org/appengine/v2/datastore"
 )
 
 // Put saves record to datastore
-var Put = func(c context.Context, key *datastore.Key, val interface{}) (*datastore.Key, error) {
+var Put = func(c context.Context, client *datastore.Client, key *datastore.Key, val interface{}) (*datastore.Key, error) {
 	if val == nil {
 		panic("val == nil")
 	}
@@ -24,7 +24,7 @@ var Put = func(c context.Context, key *datastore.Key, val interface{}) (*datasto
 			log.Debugf(c, buf.String())
 		}
 	}
-	if key, err = dbPut(c, key, val); err != nil {
+	if key, err = client.Put(c, key, val); err != nil {
 		return key, errors.WithMessage(err, fmt.Sprintf("failed to put to db (key=%v)", key2str(key)))
 	} else if LoggingEnabled && isPartialKey {
 		log.Debugf(c, "dbPut() inserted new record with key: "+key2str(key))
@@ -55,7 +55,7 @@ func logEntityProperties(buf *bytes.Buffer, prefix string, val interface{}) (err
 }
 
 // PutMulti saves multipe entities to datastore
-var PutMulti = func(c context.Context, keys []*datastore.Key, vals interface{}) ([]*datastore.Key, error) {
+var PutMulti = func(c context.Context, client *datastore.Client, keys []*datastore.Key, vals interface{}) ([]*datastore.Key, error) {
 	if LoggingEnabled {
 		//buf := new(bytes.Buffer)
 		//buf.WriteString(" => \n")
@@ -65,5 +65,5 @@ var PutMulti = func(c context.Context, keys []*datastore.Key, vals interface{}) 
 		//logKeys(c, "dbPutMulti", buf.String(), keys)
 		logKeys(c, "dbPutMulti", "", keys)
 	}
-	return dbPutMulti(c, keys, vals)
+	return client.PutMulti(c, keys, vals)
 }
