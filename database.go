@@ -8,7 +8,6 @@ import (
 	"github.com/strongo/dalgo/dal"
 	"github.com/strongo/log"
 	"google.golang.org/api/option"
-	"strconv"
 )
 
 var _ dal.Database = (*database)(nil)
@@ -33,27 +32,6 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err er
 	database.ProjectID = projectID
 	database.Client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
 	return database, err
-}
-
-func (db database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error) {
-	if len(recordKeys) == 0 {
-		return
-	}
-	keys := make([]*datastore.Key, len(recordKeys))
-	for i, recordKey := range recordKeys {
-		key, isIncomplete, err := getDatastoreKey(c, recordKey)
-		if err != nil {
-			return errors.WithMessage(err, "i="+strconv.Itoa(i))
-		}
-		if isIncomplete {
-			panic("can't delete record by incomplete key, i=" + strconv.Itoa(i))
-		}
-		keys[i] = key
-	}
-	if err = db.Client.DeleteMulti(c, keys); err != nil {
-		return
-	}
-	return
 }
 
 func (db database) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) (err error) {

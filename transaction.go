@@ -72,10 +72,6 @@ func (tx transaction) Insert(c context.Context, record dal.Record, opts ...dal.I
 	return errors.New("implement me")
 }
 
-func (tx transaction) DeleteMulti(ctx context.Context, keys []*dal.Key) error {
-	return errors.New("implement me")
-}
-
 func (tx transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
