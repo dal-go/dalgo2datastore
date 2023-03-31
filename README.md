@@ -6,9 +6,10 @@ This uses [`cloud.google.com/go/datastore`](https://pkg.go.dev/cloud.google.com/
 
 ## Why "cloud.google.com/go/datastore" and not "google.golang.org/appengine/v2/datastore"?
 
-The difference between the two Go packages "cloud.google.com/go/datastore" and "
-google.golang.org/appengine/v2/datastore" lies in the Google Cloud products they are designed to work with and their
-functionality.
+The difference between the two Go packages `cloud.google.com/go/datastore`
+and `google.golang.org/appengine/v2/datastore` lies
+in the Google Cloud products they are designed to work with
+and their functionality.
 
 ### `cloud.google.com/go/datastore`:
 
@@ -18,7 +19,7 @@ It can be used with various Google Cloud products and services, not just App Eng
 The package enables your application to interact with the Datastore API,
 allowing you to store, query, and manage data.
 
-The "cloud.google.com/go/datastore" package is recommended for new projects that require Datastore functionality. It
+The `cloud.google.com/go/datastore` package is recommended for new projects that require Datastore functionality. It
 supports all the features of the Datastore API, and works with both App Engine standard and flexible environments, as
 well as other environments like Kubernetes Engine or Compute Engine.
 
