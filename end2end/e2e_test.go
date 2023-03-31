@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 	"testing"
 	"time"
 )
@@ -36,35 +35,32 @@ func TestEndToEnd(t *testing.T) {
 	case <-waitForEmulatorReadiness(&emulatorExited):
 		if !emulatorExited {
 			testEndToEnd(t)
+			emulatorExited = true
+			time.Sleep(time.Second)
 		}
 	}
 	time.Sleep(10 * time.Millisecond)
 }
 
 func handleCommandStderr(t *testing.T, stderr *bytes.Buffer, emulatorExited *bool) {
-	reading := false
+	var s string
 	for {
-		if *emulatorExited {
+		if *emulatorExited && s != "" {
+			t.Error("STDERR from Datastore emulator:\t" + s)
 			return
 		}
 		line, err := stderr.ReadString('\n')
-		if err == io.EOF {
-			reading = false
-			time.Sleep(9 * time.Millisecond)
-			continue
+		if line != "" {
+			s += line
 		}
 		if err != nil {
+			if err == io.EOF {
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
 			t.Errorf("Failed to read from Datastore emulator STDERR: %v", err)
 			return
 		}
-		if line = strings.TrimSpace(line); line == "" {
-			continue
-		}
-		if !reading {
-			reading = true
-			t.Error("ERROR in Datastore emulator:")
-		}
-		t.Error("\t" + line)
 	}
 }
 
@@ -97,10 +93,10 @@ func startDatastoreEmulator(t *testing.T) (cmd *exec.Cmd, stdout, stderr *bytes.
 
 	// If port is busy run in terminal: kill -9 $(lsof -ti:8081)
 
-	cmd = exec.Command("gcloud", "beta", "emulators", "datastore", "start")
+	cmd = exec.Command("gcloud", "beta", "emulators", "datastore", "start", "--project", gCloudProjectID)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
-	cmd.Env = []string{"CLOUDSDK_CORE_PROJECT=" + gCloudProjectID}
+	//cmd.Env = []string{"CLOUDSDK_CORE_PROJECT=" + gCloudProjectID}
 
 	t.Log("Starting Datastore emulator...")
 	if err := cmd.Start(); err != nil {

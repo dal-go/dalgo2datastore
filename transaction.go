@@ -28,7 +28,7 @@ func (db database) RunReadwriteTransaction(ctx context.Context, f dal.RWTxWorker
 
 func (db database) runInTransaction(c context.Context, opts []dal.TransactionOption, f func(tx transaction) error) (cmt *datastore.Commit, err error) {
 	var tx transaction
-	tx.database = db
+	tx.db = db
 	tx.dalgoTxOptions = dal.NewTransactionOptions(opts...)
 	var dsTxOptions []datastore.TransactionOption
 	//tx.datastoreTxOptions.XG = tx.dalgoTxOptions.IsCrossGroup()
@@ -40,7 +40,13 @@ func (db database) runInTransaction(c context.Context, opts []dal.TransactionOpt
 	}
 	return db.Client.RunInTransaction(c, func(datastoreTx *datastore.Transaction) error {
 		tx.datastoreTx = datastoreTx
-		return f(tx)
+		if err := f(tx); err != nil {
+			return err
+		}
+		//if _, err := datastoreTx.Commit(); err != nil {
+		//	return err
+		//}
+		return nil
 	}, dsTxOptions...)
 }
 
@@ -48,9 +54,26 @@ var _ dal.Transaction = (*transaction)(nil)
 var _ dal.ReadwriteTransaction = (*transaction)(nil)
 
 type transaction struct {
-	database
+	db             database
 	dalgoTxOptions dal.TransactionOptions
 	datastoreTx    *datastore.Transaction
+}
+
+func (tx transaction) GetMulti(ctx context.Context, records []dal.Record) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (tx transaction) Select(ctx context.Context, query dal.Select) (dal.Reader, error) {
+	return nil, errors.New("implement me")
+}
+
+func (tx transaction) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) error {
+	return errors.New("implement me")
+}
+
+func (tx transaction) DeleteMulti(ctx context.Context, keys []*dal.Key) error {
+	return errors.New("implement me")
 }
 
 func (tx transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
@@ -77,7 +100,7 @@ func (tx transaction) Set(c context.Context, record dal.Record) error {
 		log.Errorf(c, "database.Update() called for incomplete key, will insert.")
 		panic("not implemented")
 		//return gaeDb.Insert(c, record, dal.NewInsertOptions(dal.WithRandomStringID(5)))
-	} else if _, err = Put(c, tx.Client, key, data); err != nil {
+	} else if _, err = Put(c, tx.db.Client, key, data); err != nil {
 		return errors.WithMessage(err, "failed to update "+key2str(key))
 	}
 	return nil
@@ -107,7 +130,7 @@ func (tx transaction) SetMulti(c context.Context, records []dal.Record) (err err
 
 	// logKeys(c, "database.SetMulti", keys)
 
-	if keys, err = PutMulti(c, tx.Client, keys, values); err != nil {
+	if keys, err = PutMulti(c, tx.db.Client, keys, values); err != nil {
 		switch err := err.(type) {
 		case datastore.MultiError:
 			if len(err) == len(records) {

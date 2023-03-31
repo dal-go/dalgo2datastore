@@ -35,45 +35,6 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err er
 	return database, err
 }
 
-func (db database) Get(c context.Context, record dal.Record) (err error) {
-	if record == nil {
-		panic("record == nil")
-	}
-	key, isIncomplete, err := getDatastoreKey(c, record.Key())
-	if err != nil {
-		return
-	}
-	if isIncomplete {
-		panic("can't get record by incomplete key")
-	}
-	entity := record.Data()
-	if err = db.Client.Get(c, key, entity); err != nil {
-		if err == datastore.ErrNoSuchEntity {
-			err = dal.NewErrNotFoundByKey(record.Key(), err)
-			record.SetError(err)
-		}
-		return
-	}
-	return
-}
-
-func (db database) Delete(c context.Context, recordKey *dal.Key) (err error) {
-	if recordKey == nil {
-		panic("recordKey == nil")
-	}
-	key, isIncomplete, err := getDatastoreKey(c, recordKey)
-	if err != nil {
-		return
-	}
-	if isIncomplete {
-		panic("can't delete record by incomplete key")
-	}
-	if err = db.Client.Delete(c, key); err != nil {
-		return
-	}
-	return
-}
-
 func (db database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error) {
 	if len(recordKeys) == 0 {
 		return
