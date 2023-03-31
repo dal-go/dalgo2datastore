@@ -57,7 +57,8 @@ jobs:
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-        install_components: 'beta,cloud-datastore-emulator'
+        with:
+          install_components: beta,cloud-datastore-emulator
 
       - name: Google Cloud Info
         run: 'gcloud info'
