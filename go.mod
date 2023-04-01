@@ -1,4 +1,4 @@
-module github.com/strongo/dalgo2gaedatastore
+module github.com/strongo/dalgo2datastore
 
 go 1.20
 

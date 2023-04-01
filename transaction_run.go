@@ -1,4 +1,4 @@
-package dalgo2gaedatastore
+package dalgo2datastore
 
 //// RunInTransaction starts new transaction
 //var RunInTransaction = func(c context.Context, tx transaction, f func(tc context.Context) error) error {

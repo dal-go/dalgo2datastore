@@ -1,4 +1,4 @@
-package dalgo2gaedatastore
+package dalgo2datastore
 
 // NewMockKeyFromDatastoreKey create new mock key
 //func NewMockKeyFromDatastoreKey(key *datastore.Key) *dal.Key {

@@ -1,4 +1,4 @@
-# [github.com/strongo/dalgo2gaedatastore](https://github.com/strongo/dalgo2gaedatastore)
+# [github.com/strongo/dalgo2datastore](https://github.com/strongo/dalgo2datastore)
 
 Bridge of Google Cloud Datastore API for [github.com/strongo/dalgo](https://github.com/strongo/dalgo) interface.
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/strongo/dalgo/end2end"
-	"github.com/strongo/dalgo2gaedatastore"
+	"github.com/strongo/dalgo2datastore"
 	"io"
 	"log"
 	"net/http"
@@ -167,7 +167,7 @@ func testEndToEnd(t *testing.T) {
 
 	setDatastoreEnvVars()
 
-	db, err := dalgo2gaedatastore.NewDatabase(context.Background(), "dalgo")
+	db, err := dalgo2datastore.NewDatabase(context.Background(), "dalgo")
 	if err != nil {
 		t.Fatalf("Failed to create datastore client: %v", err)
 	}
