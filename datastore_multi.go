@@ -2,7 +2,7 @@ package dalgo2datastore
 
 import (
 	"cloud.google.com/go/datastore"
-	"github.com/strongo/dalgo/dal"
+	"github.com/dal-go/dalgo/dal"
 )
 
 func datastoreKeysAndValues(records []dal.Record) (keys []*datastore.Key, values []any) {

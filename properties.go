@@ -2,8 +2,8 @@ package dalgo2datastore
 
 import (
 	"cloud.google.com/go/datastore"
+	"errors"
 	"fmt"
-	"github.com/pkg/errors"
 	"time"
 )
 

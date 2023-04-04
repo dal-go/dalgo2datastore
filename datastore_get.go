@@ -3,8 +3,8 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
-	"github.com/pkg/errors"
-	"github.com/strongo/dalgo/dal"
+	"errors"
+	"github.com/dal-go/dalgo/dal"
 	"strconv"
 )
 

@@ -3,9 +3,9 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"errors"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/strongo/dalgo/dal"
+	"github.com/dal-go/dalgo/dal"
 	"google.golang.org/api/option"
 )
 

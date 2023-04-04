@@ -1,66 +1,27 @@
-name: Vet, Build, Test, Lint
+name: Go CI
 
 on:
   push:
     branches:
       - main
     tags:
-      - 'v[0-9]+\.[0-9]+\.[0-9]+' # Push events to matching v*, i.e. v20.15.10
+      - 'v[0-9]+\.[0-9]+\.[0-9]+'
   pull_request:
     branches:
       - main
 
 jobs:
 
-  build:
+  go_ci:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-go@v4
+      - name: Install Go
+        uses: actions/setup-go@v4
         with:
           go-version: '^1.20'
 
-      - run: go get ./...
-
-      - run: go vet ./...
-
-      - run: go build ./...
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-          version: latest
-
-          args: --timeout=3m --print-issued-lines=true
-
-          # Optional: working directory, useful for monorepos
-          # working-directory: somedir
-
-          # Optional: golangci-lint command line arguments.
-          # args: --issues-exit-code=0
-
-          # Optional: show only new issues if it's a pull request. The default value is `false`.
-          # only-new-issues: true
-
-          # Optional: if set to true then the all caching functionality will be complete disabled,
-          #           takes precedence over all other caching options.
-          # skip-cache: true
-
-          # Optional: if set to true then the action don't cache or restore ~/go/pkg.
-          skip-pkg-cache: true
-
-          # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
-          # skip-build-cache: true
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          install_components: beta,cloud-datastore-emulator
-
-      - name: Google Cloud Components List
-        run: gcloud components list
-
-      - run: go test ./...
+      - uses: strongo/go-ci-action@v1.0.1

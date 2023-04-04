@@ -1,17 +1,16 @@
-module github.com/strongo/dalgo2datastore
+module github.com/dal-go/dalgo2datastore
 
 go 1.20
 
 require (
 	cloud.google.com/go/datastore v1.10.0
-	github.com/pkg/errors v0.9.1
+	github.com/dal-go/dalgo v0.2.2
 	github.com/stretchr/testify v1.8.2
-	github.com/strongo/dalgo v0.0.26
 	github.com/strongo/log v0.0.1
 	google.golang.org/api v0.114.0
 )
 
-//replace github.com/strongo/dalgo => ../dalgo
+//replace github.com/dal-go/dalgo => ../dalgo
 
 require (
 	cloud.google.com/go v0.110.0 // indirect

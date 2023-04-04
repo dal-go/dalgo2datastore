@@ -1,6 +1,6 @@
-# [github.com/strongo/dalgo2datastore](https://github.com/strongo/dalgo2datastore)
+# [github.com/dal-go/dalgo2datastore](https://github.com/dal-go/dalgo2datastore)
 
-Bridge of Google Cloud Datastore API for [github.com/strongo/dalgo](https://github.com/strongo/dalgo) interface.
+Bridge of Google Cloud Datastore API for [github.com/dal-go/dalgo](https://github.com/dal-go/dalgo) interface.
 
 This uses [`cloud.google.com/go/datastore`](https://pkg.go.dev/cloud.google.com/go/datastore) package.
 
@@ -42,4 +42,4 @@ for use with the App Engine standard environment.
 
 ## Similar projects
 
-* [github.com/strongo/dalgo2firestore](https://github.com/strongo/dalgo2firestore)
+* [github.com/dal-go/dalgo2firestore](https://github.com/dal-go/dalgo2firestore)

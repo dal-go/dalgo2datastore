@@ -2,7 +2,7 @@ package dalgo2datastore
 
 import (
 	"cloud.google.com/go/datastore"
-	"github.com/pkg/errors"
+	"errors"
 )
 
 // SaverWrapper used to serialize struct to properties on saving

@@ -3,9 +3,9 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"errors"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/strongo/dalgo/dal"
+	"github.com/dal-go/dalgo/dal"
 	"github.com/strongo/log"
 )
 
@@ -94,7 +94,7 @@ func (tx transaction) Set(c context.Context, record dal.Record) error {
 		panic("not implemented")
 		//return gaeDb.Insert(c, record, dal.NewInsertOptions(dal.WithRandomStringID(5)))
 	} else if _, err = Put(c, tx.db.Client, key, data); err != nil {
-		return errors.WithMessage(err, "failed to update "+key2str(key))
+		return fmt.Errorf("failed to update %s: %w", key2str(key), err)
 	}
 	return nil
 }

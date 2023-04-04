@@ -5,7 +5,6 @@ import (
 	"cloud.google.com/go/datastore"
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
 	"github.com/strongo/log"
 )
 
@@ -25,7 +24,7 @@ var Put = func(c context.Context, client *datastore.Client, key *datastore.Key, 
 		}
 	}
 	if key, err = client.Put(c, key, val); err != nil {
-		return key, errors.WithMessage(err, fmt.Sprintf("failed to put to db (key=%v)", key2str(key)))
+		return key, fmt.Errorf("failed to put to db (key=%v): %w", key2str(key), err)
 	} else if LoggingEnabled && isPartialKey {
 		log.Debugf(c, "dbPut() inserted new record with key: "+key2str(key))
 	}

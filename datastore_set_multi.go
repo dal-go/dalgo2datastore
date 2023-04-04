@@ -3,7 +3,7 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
-	"github.com/strongo/dalgo/dal"
+	"github.com/dal-go/dalgo/dal"
 )
 
 type multiSetter = func(keys []*datastore.Key, dst []any) error

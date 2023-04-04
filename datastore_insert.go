@@ -3,9 +3,9 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
+	"errors"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/strongo/dalgo/dal"
+	"github.com/dal-go/dalgo/dal"
 	"github.com/strongo/log"
 )
 
@@ -71,7 +71,7 @@ func insert(c context.Context, record dal.Record, insert inserter, exists existe
 	}
 
 	wrapErr := func(err error) error {
-		return errors.WithMessage(err, "failed to create record with random str ID for: "+kind)
+		return fmt.Errorf("failed to create record with random str ID for [%s]: %w", kind, err)
 	}
 	key, isPartial, err := getDatastoreKey(c, recordKey)
 	if err != nil {
