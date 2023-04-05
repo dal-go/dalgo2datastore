@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/dal-go/dalgo/end2end"
+	"github.com/dal-go/dalgo-end2end-tests"
 	"github.com/dal-go/dalgo2datastore"
 	"github.com/stretchr/testify/assert"
 	"io"
