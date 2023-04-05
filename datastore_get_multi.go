@@ -25,9 +25,13 @@ func getMulti(records []dal.Record, getMulti multiGetter) (err error) {
 	if err := getMulti(keys, values); err != nil {
 		switch err := err.(type) {
 		case datastore.MultiError:
-			return handleMultiError(err, records)
+			if err = handleMultiError(err, records, operationGet); len(err) > 0 {
+				return err
+			}
+			return nil
+		default:
+			return err
 		}
-		return err
 	}
 	for _, record := range records {
 		record.SetError(dal.NoError)

@@ -2,6 +2,7 @@ package dalgo2datastore
 
 import (
 	"cloud.google.com/go/datastore"
+	"fmt"
 	"github.com/dal-go/dalgo/dal"
 )
 
@@ -26,7 +27,14 @@ func datastoreKeysAndValues(records []dal.Record) (keys []*datastore.Key, values
 	return
 }
 
-func handleMultiError(err datastore.MultiError, records []dal.Record) error {
+type operation string
+
+const (
+	operationGet operation = "get"
+	operationSet operation = "set"
+)
+
+func handleMultiError(err datastore.MultiError, records []dal.Record, op operation) datastore.MultiError {
 	if len(err) == 0 {
 		return nil
 	}
@@ -34,14 +42,16 @@ func handleMultiError(err datastore.MultiError, records []dal.Record) error {
 		for i, e := range err {
 			record := records[i]
 			if e == datastore.ErrNoSuchEntity {
-				record.SetError(dal.NewErrNotFoundByKey(record.Key(), e))
+				record.SetError(fmt.Errorf("%w: %v", dal.ErrRecordNotFound, e))
 			} else if e != nil {
 				record.SetError(e)
 			} else {
 				record.SetError(dal.NoError)
 			}
 		}
-		return nil
+		if op == operationGet {
+			err = nil
+		}
 	}
 	return err
 }

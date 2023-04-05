@@ -33,7 +33,7 @@ func setMulti(records []dal.Record, setMulti multiSetter) (err error) {
 	if err := setMulti(keys, values); err != nil {
 		switch err := err.(type) {
 		case datastore.MultiError:
-			return handleMultiError(err, records)
+			return handleMultiError(err, records, operationSet)
 		}
 		return err
 	}

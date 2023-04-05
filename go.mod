@@ -5,18 +5,18 @@ go 1.20
 require (
 	cloud.google.com/go/datastore v1.11.0
 	github.com/dal-go/dalgo v0.2.3
+	github.com/dal-go/dalgo-end2end-tests v0.0.7
 	github.com/stretchr/testify v1.8.2
 	github.com/strongo/log v0.0.1
 	google.golang.org/api v0.115.0
 )
 
-//replace github.com/dal-go/dalgo => ../dalgo
+//replace github.com/dal-go/dalgo-end2end-tests => ../dalgo-end2end-tests
 
 require (
 	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/compute v1.19.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	github.com/dal-go/dalgo-end2end-tests v0.0.6 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
