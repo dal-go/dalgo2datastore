@@ -25,7 +25,9 @@ jobs:
         with:
           go-version: '^1.20'
 
-      - name: 'Set up Google Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - run: gcloud version
 
       - uses: strongo/go-ci-action@v1.0.1
