@@ -18,7 +18,7 @@ import (
 
 func TestEndToEnd(t *testing.T) {
 	log.Println("TestEndToEnd() started...")
-	cmd, _, cmdStdErr := startDatastoreEmulator(t)
+	cmd, cmdStdOutput, cmdErrOutput := startDatastoreEmulator(t)
 	defer terminateDatastoreEmulator(t, cmd)
 	defer func() {
 		err := recover()
@@ -28,7 +28,8 @@ func TestEndToEnd(t *testing.T) {
 		}
 	}()
 	emulatorExited := false
-	go handleCommandStderr(t, cmdStdErr, &emulatorExited)
+	go handleCommandOutput(t, "error", cmdStdOutput, &emulatorExited)
+	go handleCommandOutput(t, "standard", cmdErrOutput, &emulatorExited)
 	select {
 	case <-handleEmulatorClosing(t, cmd):
 		emulatorExited = true
@@ -42,14 +43,13 @@ func TestEndToEnd(t *testing.T) {
 	time.Sleep(10 * time.Millisecond)
 }
 
-func handleCommandStderr(t *testing.T, stderr *bytes.Buffer, emulatorExited *bool) {
+func handleCommandOutput(t *testing.T, logType string, output *bytes.Buffer, emulatorExited *bool) {
 	var s string
 	for {
-		if *emulatorExited && s != "" {
-			t.Log("STDERR from Datastore emulator:\t" + s)
-			return
+		if *emulatorExited {
+			break
 		}
-		line, err := stderr.ReadString('\n')
+		line, err := output.ReadString('\n')
 		if line != "" {
 			s += line
 		}
@@ -59,7 +59,15 @@ func handleCommandStderr(t *testing.T, stderr *bytes.Buffer, emulatorExited *boo
 				continue
 			}
 			t.Errorf("Failed to read from Datastore emulator STDERR: %v", err)
-			return
+			break
+		}
+	}
+	if s != "" {
+		switch logType {
+		case "error":
+			t.Errorf("STDERR from Datastore emulator:\n%s", s)
+		default:
+			t.Logf("STDOUT from Datastore emulator:\n%s", s)
 		}
 	}
 }
