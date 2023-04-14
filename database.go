@@ -16,9 +16,16 @@ type database struct {
 	Client    *datastore.Client
 }
 
-func (database) Select(ctx context.Context, query dal.Select) (dal.Reader, error) {
-	//TODO implement me
-	panic("implement me")
+func (db database) SelectAll(ctx context.Context, query dal.Query) ([]dal.Record, error) {
+	return selectAll(ctx, db.ProjectID, query)
+}
+
+func (db database) SelectAllIDs(c context.Context, query dal.Query) (ids []any, err error) {
+	return selectAllIDs(c, db.ProjectID, query)
+}
+
+func (database) Select(ctx context.Context, query dal.Query) (dal.Reader, error) {
+	return nil, nil
 }
 
 func (database) Upsert(c context.Context, record dal.Record) error {
