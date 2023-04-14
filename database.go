@@ -16,6 +16,18 @@ type database struct {
 	Client    *datastore.Client
 }
 
+func (db database) SelectAllStrIDs(ctx context.Context, query dal.Query) ([]string, error) {
+	return selectAllStrIDs(ctx, db.ProjectID, query)
+}
+
+func (db database) SelectAllIntIDs(ctx context.Context, query dal.Query) ([]int, error) {
+	return selectAllIntIDs(ctx, db.ProjectID, query)
+}
+
+func (db database) SelectAllInt64IDs(ctx context.Context, query dal.Query) ([]int64, error) {
+	return selectAllInt64IDs(ctx, db.ProjectID, query)
+}
+
 func (db database) SelectAll(ctx context.Context, query dal.Query) ([]dal.Record, error) {
 	return selectAll(ctx, db.ProjectID, query)
 }

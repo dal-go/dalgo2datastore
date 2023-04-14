@@ -65,6 +65,18 @@ type transaction struct {
 	pendingKeys    []partialKey
 }
 
+func (tx transaction) SelectAllStrIDs(ctx context.Context, query dal.Query) ([]string, error) {
+	return selectAllStrIDs(ctx, tx.db.ProjectID, query)
+}
+
+func (tx transaction) SelectAllIntIDs(ctx context.Context, query dal.Query) ([]int, error) {
+	return selectAllIntIDs(ctx, tx.db.ProjectID, query)
+}
+
+func (tx transaction) SelectAllInt64IDs(ctx context.Context, query dal.Query) ([]int64, error) {
+	return selectAllInt64IDs(ctx, tx.db.ProjectID, query)
+}
+
 func (tx transaction) SelectAll(ctx context.Context, query dal.Query) ([]dal.Record, error) {
 	return selectAll(ctx, tx.db.ProjectID, query)
 }

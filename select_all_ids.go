@@ -11,10 +11,10 @@ import (
 	"reflect"
 )
 
-func selectAllIDs(c context.Context, projectID string, query dal.Query) (ids []any, err error) {
+func selectAllIDsWorker(c context.Context, projectID string, query dal.Query, addID func(key *datastore.Key) error) (err error) {
 	var client *datastore.Client
 	if client, err = datastore.NewClient(c, projectID, option.WithoutAuthentication()); err != nil {
-		return ids, err
+		return err
 	}
 	q := dalQuery2datastoreQuery(query).KeysOnly()
 	reader := client.Run(c, q)
@@ -26,15 +26,45 @@ func selectAllIDs(c context.Context, projectID string, query dal.Query) (ids []a
 				err = nil
 				break
 			}
-			return ids, err
+			return err
 		}
+		if err = addID(key); err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func selectAllIDs(c context.Context, projectID string, query dal.Query) (ids []any, err error) {
+	return ids, selectAllIDsWorker(c, projectID, query, func(key *datastore.Key) error {
 		id, err := idFromKey(key, query.IDKind)
 		if err != nil {
-			return ids, err
+			return err
 		}
 		ids = append(ids, id)
-	}
-	return ids, nil
+		return nil
+	})
+}
+
+func selectAllStrIDs(c context.Context, projectID string, query dal.Query) (ids []string, err error) {
+	return ids, selectAllIDsWorker(c, projectID, query, func(key *datastore.Key) error {
+		ids = append(ids, key.Name)
+		return nil
+	})
+}
+
+func selectAllIntIDs(c context.Context, projectID string, query dal.Query) (ids []int, err error) {
+	return ids, selectAllIDsWorker(c, projectID, query, func(key *datastore.Key) error {
+		ids = append(ids, int(key.ID))
+		return nil
+	})
+}
+
+func selectAllInt64IDs(c context.Context, projectID string, query dal.Query) (ids []int64, err error) {
+	return ids, selectAllIDsWorker(c, projectID, query, func(key *datastore.Key) error {
+		ids = append(ids, key.ID)
+		return nil
+	})
 }
 
 func idFromKey(key *datastore.Key, idKind reflect.Kind) (id any, err error) {
