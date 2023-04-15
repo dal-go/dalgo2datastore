@@ -13,7 +13,18 @@ var _ dal.Database = (*database)(nil)
 
 type database struct {
 	ProjectID string
-	Client    *datastore.Client
+	client    *datastore.Client
+}
+
+func (db database) ID() string {
+	if db.ProjectID == "" {
+		return datastore.DetectProjectID
+	}
+	return db.ProjectID
+}
+
+func (db database) Client() dal.ClientInfo {
+	return dal.NewClientInfo("datastore", "v1")
 }
 
 func (db database) SelectAllStrIDs(ctx context.Context, query dal.Query) ([]string, error) {
@@ -48,7 +59,7 @@ func (database) Upsert(c context.Context, record dal.Record) error {
 func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err error) {
 	var database database
 	database.ProjectID = projectID
-	database.Client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
+	database.client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
 	return database, err
 }
 

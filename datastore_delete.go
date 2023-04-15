@@ -16,7 +16,7 @@ func (tx transaction) Delete(ctx context.Context, key *dal.Key) error {
 
 func (db database) Delete(c context.Context, record dal.Record) (err error) {
 	return delete(c, record.Key(), func(key *datastore.Key) error {
-		return db.Client.Delete(c, key)
+		return db.client.Delete(c, key)
 	})
 }
 

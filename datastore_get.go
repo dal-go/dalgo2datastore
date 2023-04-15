@@ -16,7 +16,7 @@ func (tx transaction) Get(ctx context.Context, record dal.Record) error {
 
 func (db database) Get(c context.Context, record dal.Record) (err error) {
 	return get(c, record, func(key *datastore.Key, dst interface{}) error {
-		return db.Client.Get(c, key, dst)
+		return db.client.Get(c, key, dst)
 	})
 }
 

@@ -38,7 +38,7 @@ func (db database) runInTransaction(c context.Context, opts []dal.TransactionOpt
 	if tx.dalgoTxOptions.IsCrossGroup() {
 		dsTxOptions = append(dsTxOptions, datastore.MaxAttempts(tx.dalgoTxOptions.Attempts()))
 	}
-	return db.Client.RunInTransaction(c, func(datastoreTx *datastore.Transaction) error {
+	return db.client.RunInTransaction(c, func(datastoreTx *datastore.Transaction) error {
 		tx.datastoreTx = datastoreTx
 		if err := f(tx); err != nil {
 			return err
@@ -63,6 +63,11 @@ type transaction struct {
 	dalgoTxOptions dal.TransactionOptions
 	datastoreTx    *datastore.Transaction
 	pendingKeys    []partialKey
+}
+
+// ID returns empty string as datastore doesn't support long-lasting transactions
+func (tx transaction) ID() string {
+	return ""
 }
 
 func (tx transaction) SelectAllStrIDs(ctx context.Context, query dal.Query) ([]string, error) {
@@ -113,7 +118,7 @@ func (tx transaction) Set(c context.Context, record dal.Record) error {
 		log.Errorf(c, "database.Update() called for incomplete key, will insert.")
 		panic("not implemented")
 		//return gaeDb.Insert(c, record, dal.NewInsertOptions(dal.WithRandomStringID(5)))
-	} else if _, err = Put(c, tx.db.Client, key, data); err != nil {
+	} else if _, err = Put(c, tx.db.client, key, data); err != nil {
 		return fmt.Errorf("failed to update %s: %w", key2str(key), err)
 	}
 	return nil
@@ -143,7 +148,7 @@ func (tx transaction) SetMultiOld(c context.Context, records []dal.Record) (err 
 
 	// logKeys(c, "database.SetMulti", keys)
 
-	if keys, err = PutMulti(c, tx.db.Client, keys, values); err != nil {
+	if keys, err = PutMulti(c, tx.db.client, keys, values); err != nil {
 		switch err := err.(type) {
 		case datastore.MultiError:
 			if len(err) == len(records) {

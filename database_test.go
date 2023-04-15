@@ -16,7 +16,7 @@ func TestNewDatabase(t *testing.T) {
 	//}
 	switch v := v.(type) {
 	case database: // OK
-		assert.NotNilf(t, v.Client, "database.Client == nil")
+		assert.NotNilf(t, v.client, "database.client == nil")
 	default:
 		t.Errorf("unexpected DB type: %T", v)
 	}

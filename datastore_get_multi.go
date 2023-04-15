@@ -16,7 +16,7 @@ func (tx transaction) GetMulti(ctx context.Context, records []dal.Record) error 
 
 func (db database) GetMulti(c context.Context, records []dal.Record) error {
 	return getMulti(records, func(keys []*datastore.Key, dst any) error {
-		return db.Client.GetMulti(c, keys, dst)
+		return db.client.GetMulti(c, keys, dst)
 	})
 }
 

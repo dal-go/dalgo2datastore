@@ -16,7 +16,7 @@ func (tx transaction) DeleteMulti(ctx context.Context, keys []*dal.Key) error {
 
 func (db database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error) {
 	return deleteMulti(c, recordKeys, func(keys []*datastore.Key) error {
-		return db.Client.DeleteMulti(c, keys)
+		return db.client.DeleteMulti(c, keys)
 	})
 }
 

@@ -20,7 +20,7 @@ func (tx transaction) SetMulti(ctx context.Context, records []dal.Record) error 
 
 func (db database) SetMulti(c context.Context, records []dal.Record) error {
 	return setMulti(records, func(keys []*datastore.Key, dst []any) error {
-		_, err := db.Client.PutMulti(c, keys, dst)
+		_, err := db.client.PutMulti(c, keys, dst)
 		if err != nil {
 			return err
 		}

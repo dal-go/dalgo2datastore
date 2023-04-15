@@ -43,14 +43,14 @@ func (db database) Insert(c context.Context, record dal.Record, opts ...dal.Inse
 	}
 	options := dal.NewInsertOptions(opts...)
 	var inserter = func(key *datastore.Key, isPartialKey bool, dst interface{}) (err error) {
-		if key, err = db.Client.Put(c, key, dst); err != nil {
+		if key, err = db.client.Put(c, key, dst); err != nil {
 			return err
 		}
 		updatePartialKey(record.Key(), key)
 		return nil
 	}
 	var exister = func(key *datastore.Key) error {
-		return db.Client.Get(c, key, nil)
+		return db.client.Get(c, key, nil)
 	}
 	return insert(c, record, inserter, exister, options)
 }
