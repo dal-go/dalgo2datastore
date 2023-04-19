@@ -28,6 +28,7 @@ func (db database) RunReadwriteTransaction(ctx context.Context, f dal.RWTxWorker
 func (db database) runInTransaction(c context.Context, opts []dal.TransactionOption, f func(tx transaction) error) (cmt *datastore.Commit, err error) {
 	var tx transaction
 	tx.db = db
+	tx.Selector = db.Selector
 	tx.dalgoTxOptions = dal.NewTransactionOptions(opts...)
 	var dsTxOptions []datastore.TransactionOption
 	//tx.datastoreTxOptions.XG = tx.dalgoTxOptions.IsCrossGroup()
@@ -62,35 +63,12 @@ type transaction struct {
 	dalgoTxOptions dal.TransactionOptions
 	datastoreTx    *datastore.Transaction
 	pendingKeys    []partialKey
+	dal.Selector
 }
 
 // ID returns empty string as datastore doesn't support long-lasting transactions
 func (tx transaction) ID() string {
 	return ""
-}
-
-func (tx transaction) SelectAllStrIDs(ctx context.Context, query dal.Query) ([]string, error) {
-	return selectAllStrIDs(ctx, tx.db.ProjectID, query)
-}
-
-func (tx transaction) SelectAllIntIDs(ctx context.Context, query dal.Query) ([]int, error) {
-	return selectAllIntIDs(ctx, tx.db.ProjectID, query)
-}
-
-func (tx transaction) SelectAllInt64IDs(ctx context.Context, query dal.Query) ([]int64, error) {
-	return selectAllInt64IDs(ctx, tx.db.ProjectID, query)
-}
-
-func (tx transaction) SelectAll(ctx context.Context, query dal.Query) ([]dal.Record, error) {
-	return selectAll(ctx, tx.db.ProjectID, query)
-}
-
-func (tx transaction) SelectAllIDs(ctx context.Context, query dal.Query) ([]any, error) {
-	return selectAllIDs(ctx, tx.db.ProjectID, query)
-}
-
-func (tx transaction) Select(c context.Context, query dal.Query) (dal.Reader, error) {
-	return getReader(c, tx.db.ProjectID, query)
 }
 
 func (tx transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {

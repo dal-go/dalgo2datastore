@@ -28,30 +28,6 @@ func (db database) Client() dal.ClientInfo {
 	return dal.NewClientInfo("datastore", "v1")
 }
 
-//func (db database) SelectAllStrIDs(ctx context.Context, query dal.Query) ([]string, error) {
-//	return selectAllStrIDs(ctx, db.ProjectID, query)
-//}
-//
-//func (db database) SelectAllIntIDs(ctx context.Context, query dal.Query) ([]int, error) {
-//	return selectAllIntIDs(ctx, db.ProjectID, query)
-//}
-//
-//func (db database) SelectAllInt64IDs(ctx context.Context, query dal.Query) ([]int64, error) {
-//	return selectAllInt64IDs(ctx, db.ProjectID, query)
-//}
-//
-//func (db database) SelectAll(ctx context.Context, query dal.Query) ([]dal.Record, error) {
-//	return selectAll(ctx, db.ProjectID, query)
-//}
-//
-//func (db database) SelectAllIDs(c context.Context, query dal.Query) (ids []any, err error) {
-//	return selectAllIDs(c, db.ProjectID, query)
-//}
-//
-//func (db database) Select(c context.Context, query dal.Query) (dal.Reader, error) {
-//	return getReader(c, db.ProjectID, query)
-//}
-
 func (database) Upsert(c context.Context, record dal.Record) error {
 	panic("implement me")
 }
