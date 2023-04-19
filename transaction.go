@@ -28,7 +28,7 @@ func (db database) RunReadwriteTransaction(ctx context.Context, f dal.RWTxWorker
 func (db database) runInTransaction(c context.Context, opts []dal.TransactionOption, f func(tx transaction) error) (cmt *datastore.Commit, err error) {
 	var tx transaction
 	tx.db = db
-	tx.Selector = db.Selector
+	tx.QueryExecutor = db.QueryExecutor
 	tx.dalgoTxOptions = dal.NewTransactionOptions(opts...)
 	var dsTxOptions []datastore.TransactionOption
 	//tx.datastoreTxOptions.XG = tx.dalgoTxOptions.IsCrossGroup()
@@ -63,7 +63,7 @@ type transaction struct {
 	dalgoTxOptions dal.TransactionOptions
 	datastoreTx    *datastore.Transaction
 	pendingKeys    []partialKey
-	dal.Selector
+	dal.QueryExecutor
 }
 
 // ID returns empty string as datastore doesn't support long-lasting transactions

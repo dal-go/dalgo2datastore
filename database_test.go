@@ -11,9 +11,6 @@ func TestNewDatabase(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewDatabase() failed: %v", err)
 	}
-	//if v == nil {
-	//	t.Fatalf("v == nil")
-	//}
 	switch v := v.(type) {
 	case database: // OK
 		assert.NotNilf(t, v.client, "database.client == nil")

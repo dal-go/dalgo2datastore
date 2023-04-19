@@ -14,7 +14,7 @@ var _ dal.Database = (*database)(nil)
 type database struct {
 	ProjectID string
 	client    *datastore.Client
-	dal.Selector
+	dal.QueryExecutor
 }
 
 func (db database) ID() string {
@@ -37,7 +37,7 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err er
 	var database database
 	database.ProjectID = projectID
 	database.client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
-	database.Selector = dal.NewSelector(func(c context.Context, query dal.Query) (dal.Reader, error) {
+	database.QueryExecutor = dal.NewQueryExecutor(func(c context.Context, query dal.Query) (dal.Reader, error) {
 		return getReader(c, database.ProjectID, query)
 	})
 	return database, err
