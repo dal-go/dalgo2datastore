@@ -3,7 +3,6 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/dal-go/dalgo/dal"
 	"github.com/strongo/log"
@@ -90,8 +89,8 @@ func (tx transaction) SelectAllIDs(ctx context.Context, query dal.Query) ([]any,
 	return selectAllIDs(ctx, tx.db.ProjectID, query)
 }
 
-func (tx transaction) Select(ctx context.Context, query dal.Query) (dal.Reader, error) {
-	return nil, errors.New("implement me")
+func (tx transaction) Select(c context.Context, query dal.Query) (dal.Reader, error) {
+	return getReader(c, tx.db.ProjectID, query)
 }
 
 func (tx transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
