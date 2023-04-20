@@ -17,13 +17,14 @@ type datastoreReader struct {
 }
 
 func (d datastoreReader) Next() (record dal.Record, err error) {
-	if d.query.Limit > 0 && d.i >= d.query.Limit {
+	if limit := d.query.Limit(); limit > 0 && d.i >= limit {
 		return nil, dal.ErrNoMoreRecords
 	}
-	if d.query.Into == nil {
-		record = dal.NewRecordWithIncompleteKey(d.query.From.Name, d.query.IDKind, nil)
+	from := d.query.From()
+	if into := d.query.Into(); into == nil {
+		record = dal.NewRecordWithIncompleteKey(from.Name, d.query.IDKind(), nil)
 	} else {
-		record = d.query.Into()
+		record = into()
 	}
 	data := record.Data()
 	if rd, ok := data.(dal.RecordData); ok {
@@ -37,7 +38,7 @@ func (d datastoreReader) Next() (record dal.Record, err error) {
 		return record, err
 	}
 	idKind := record.Key().IDKind
-	k := dal.NewIncompleteKey(d.query.From.Name, idKind, nil)
+	k := dal.NewIncompleteKey(from.Name, idKind, nil)
 	if k.ID, err = idFromKey(key, idKind); err != nil {
 		return record, err
 	}

@@ -37,9 +37,10 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err er
 	var database database
 	database.ProjectID = projectID
 	database.client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
-	database.QueryExecutor = dal.NewQueryExecutor(func(c context.Context, query dal.Query) (dal.Reader, error) {
+	var getReader = func(c context.Context, query dal.Query) (dal.Reader, error) {
 		return getReader(c, database.ProjectID, query)
-	})
+	}
+	database.QueryExecutor = dal.NewQueryExecutor(getReader)
 	return database, err
 }
 

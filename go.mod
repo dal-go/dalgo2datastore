@@ -4,15 +4,16 @@ go 1.20
 
 require (
 	cloud.google.com/go/datastore v1.11.0
-	github.com/dal-go/dalgo v0.2.14
+	github.com/dal-go/dalgo v0.2.16
 	github.com/dal-go/dalgo-end2end-tests v0.0.11
 	github.com/stretchr/testify v1.8.2
 	github.com/strongo/log v0.0.1
 	google.golang.org/api v0.118.0
 )
 
-//replace github.com/dal-go/dalgo => ../dalgo
-//replace github.com/dal-go/dalgo-end2end-tests => ../dalgo-end2end-tests
+replace github.com/dal-go/dalgo => ../dalgo
+
+replace github.com/dal-go/dalgo-end2end-tests => ../dalgo-end2end-tests
 
 require (
 	cloud.google.com/go v0.110.0 // indirect

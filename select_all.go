@@ -12,7 +12,10 @@ func getDatastoreIterator(c context.Context, projectID string, query dal.Query) 
 	if client, err = datastore.NewClient(c, projectID, option.WithoutAuthentication()); err != nil {
 		return
 	}
-	q := dalQuery2datastoreQuery(query)
+	var q *datastore.Query
+	if q, err = dalQuery2datastoreQuery(query); err != nil {
+		return nil, err
+	}
 	return client.Run(c, q), nil
 }
 
