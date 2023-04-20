@@ -21,7 +21,14 @@ func dalQuery2datastoreQuery(query dal.Query) (q *datastore.Query, err error) {
 			case dal.FieldRef:
 				switch right := comparison.Right.(type) {
 				case dal.Constant:
-					q = q.FilterField(left.Name, string(comparison.Operator), right.Value)
+					var operator string
+					switch comparison.Operator {
+					case dal.Equal:
+						operator = "="
+					default:
+						operator = string(comparison.Operator)
+					}
+					q = q.FilterField(left.Name, operator, right.Value)
 				default:
 					return fmt.Errorf("only FieldRef are supported as left operand, got: %T", right)
 				}
