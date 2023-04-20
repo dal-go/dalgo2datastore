@@ -16,7 +16,7 @@ type datastoreReader struct {
 	iterator *datastore.Iterator
 }
 
-func (d datastoreReader) Next() (record dal.Record, err error) {
+func (d *datastoreReader) Next() (record dal.Record, err error) {
 	if limit := d.query.Limit(); limit > 0 && d.i >= limit {
 		return nil, dal.ErrNoMoreRecords
 	}
@@ -47,7 +47,7 @@ func (d datastoreReader) Next() (record dal.Record, err error) {
 	return
 }
 
-func (d datastoreReader) Cursor() (string, error) {
+func (d *datastoreReader) Cursor() (string, error) {
 	cursor, err := d.iterator.Cursor()
 	if err != nil {
 		return "", err

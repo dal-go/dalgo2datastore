@@ -24,5 +24,5 @@ func getReader(c context.Context, projectID string, query dal.Query) (reader dal
 	if dsIterator, err = getDatastoreIterator(c, projectID, query); err != nil {
 		return
 	}
-	return datastoreReader{query: query, iterator: dsIterator}, nil
+	return &datastoreReader{query: query, iterator: dsIterator}, nil
 }
