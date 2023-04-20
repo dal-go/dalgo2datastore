@@ -53,7 +53,16 @@ func dalQuery2datastoreQuery(query dal.Query) (q *datastore.Query, err error) {
 		default:
 			return q, fmt.Errorf("only comparison or group conditions are supported at root level of where clause, got: %T", cond)
 		}
+	}
 
+	if orderBy := query.OrderBy(); len(orderBy) > 0 {
+		for _, o := range orderBy {
+			expression := o.String()
+			if o.Descending() {
+				expression = "-" + expression
+			}
+			q = q.Order(expression)
+		}
 	}
 	return q, nil
 }
