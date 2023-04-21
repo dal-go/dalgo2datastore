@@ -29,7 +29,11 @@ func (db database) SetMulti(c context.Context, records []dal.Record) error {
 }
 
 func setMulti(records []dal.Record, setMulti multiSetter) (err error) {
-	keys, values := datastoreKeysAndValues(records)
+	var keys []*datastore.Key
+	var values []any
+	if keys, values, err = datastoreKeysAndValues(records); err != nil {
+		return err
+	}
 	if err := setMulti(keys, values); err != nil {
 		switch err := err.(type) {
 		case datastore.MultiError:

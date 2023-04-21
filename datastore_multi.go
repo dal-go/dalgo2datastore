@@ -6,23 +6,21 @@ import (
 	"github.com/dal-go/dalgo/dal"
 )
 
-func datastoreKeysAndValues(records []dal.Record) (keys []*datastore.Key, values []any) {
+func datastoreKeysAndValues(records []dal.Record) (keys []*datastore.Key, values []any, err error) {
 	count := len(records)
 	keys = make([]*datastore.Key, count)
 	values = make([]any, count)
 	for i := range records {
 		record := records[i]
 		recordKey := record.Key()
-		kind := recordKey.Collection()
-		switch v := recordKey.ID.(type) {
-		case string:
-			keys[i] = datastore.NameKey(kind, v, nil)
-		case int64:
-			keys[i] = datastore.IDKey(kind, v, nil)
-		case int:
-			keys[i] = datastore.IDKey(kind, int64(v), nil)
+		if keys[i], _, err = getDatastoreKey(recordKey); err != nil {
+			return
 		}
-		values[i] = record.Data()
+		data := record.Data()
+		if recordData, ok := data.(dal.RecordData); ok {
+			data = recordData.DTO()
+		}
+		values[i] = data
 	}
 	return
 }

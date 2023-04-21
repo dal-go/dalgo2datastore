@@ -11,20 +11,20 @@ import (
 type multiDeleter = func(keys []*datastore.Key) error
 
 func (tx transaction) DeleteMulti(ctx context.Context, keys []*dal.Key) error {
-	return deleteMulti(ctx, keys, tx.datastoreTx.DeleteMulti)
+	return deleteMulti(keys, tx.datastoreTx.DeleteMulti)
 }
 
 func (db database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error) {
-	return deleteMulti(c, recordKeys, func(keys []*datastore.Key) error {
+	return deleteMulti(recordKeys, func(keys []*datastore.Key) error {
 		return db.client.DeleteMulti(c, keys)
 	})
 }
 
-func deleteMulti(ctx context.Context, dalgoKeys []*dal.Key, deleteMulti multiDeleter) (err error) {
+func deleteMulti(dalgoKeys []*dal.Key, deleteMulti multiDeleter) (err error) {
 	keys := make([]*datastore.Key, len(dalgoKeys))
 	for i, k := range dalgoKeys {
 		var isIncomplete bool
-		if keys[i], isIncomplete, err = getDatastoreKey(ctx, k); err != nil {
+		if keys[i], isIncomplete, err = getDatastoreKey(k); err != nil {
 			return err
 		}
 		if isIncomplete {

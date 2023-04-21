@@ -59,27 +59,28 @@ func setRecordID(key *datastore.Key, record dal.Record) {
 }
 
 // ErrKeyHasBothIds indicates record has both string and int ids
-var ErrKeyHasBothIds = errors.New("record has both string and int ids")
+//var ErrKeyHasBothIds = errors.New("record has both string and int ids")
 
 // ErrEmptyKind indicates record holder returned empty kind
 var ErrEmptyKind = errors.New("record holder returned empty kind")
 
-func getDatastoreKey(c context.Context, recordKey *dal.Key) (key *datastore.Key, isPartial bool, err error) {
-	if recordKey == nil {
-		panic(recordKey == nil)
+func getDatastoreKey(dalKey *dal.Key) (datastoreKey *datastore.Key, isPartial bool, err error) {
+	if dalKey == nil {
+		panic(dalKey == nil)
 	}
-	ref := recordKey
+	ref := dalKey
 	if ref.Collection() == "" {
 		err = ErrEmptyKind
 	} else {
 		if ref.ID == nil {
-			key = NewIncompleteKey(ref.Collection(), nil)
+			datastoreKey = NewIncompleteKey(ref.Collection(), nil)
 		} else {
 			switch v := ref.ID.(type) {
 			case string:
-				key = datastore.NameKey(ref.Collection(), v, nil)
+				id := dal.EscapeID(v)
+				datastoreKey = datastore.NameKey(ref.Collection(), id, nil)
 			case int:
-				key = datastore.IDKey(ref.Collection(), (int64)(v), nil)
+				datastoreKey = datastore.IDKey(ref.Collection(), (int64)(v), nil)
 			default:
 				err = fmt.Errorf("unsupported ID type: %T", ref.ID)
 			}

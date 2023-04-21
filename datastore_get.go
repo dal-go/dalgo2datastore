@@ -11,17 +11,17 @@ import (
 type getter = func(key *datastore.Key, dst interface{}) error
 
 func (tx transaction) Get(ctx context.Context, record dal.Record) error {
-	return get(ctx, record, tx.datastoreTx.Get)
+	return get(record, tx.datastoreTx.Get)
 }
 
 func (db database) Get(c context.Context, record dal.Record) (err error) {
-	return get(c, record, func(key *datastore.Key, dst interface{}) error {
+	return get(record, func(key *datastore.Key, dst interface{}) error {
 		return db.client.Get(c, key, dst)
 	})
 }
 
-func get(ctx context.Context, record dal.Record, get getter) error {
-	datastoreKey, isIncomplete, err := getDatastoreKey(ctx, record.Key())
+func get(record dal.Record, get getter) error {
+	datastoreKey, isIncomplete, err := getDatastoreKey(record.Key())
 	if err != nil {
 		return err
 	}

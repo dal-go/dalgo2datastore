@@ -59,7 +59,7 @@ func updatePartialKey(key *dal.Key, dsKey *datastore.Key) {
 	key.ID = dsKey.ID
 }
 
-func insert(c context.Context, record dal.Record, insert inserter, exists exister, options dal.InsertOptions) error {
+func insert(ctx context.Context, record dal.Record, insert inserter, exists exister, options dal.InsertOptions) error {
 	if record == nil {
 		panic("record == nil")
 	}
@@ -73,14 +73,14 @@ func insert(c context.Context, record dal.Record, insert inserter, exists existe
 	wrapErr := func(err error) error {
 		return fmt.Errorf("failed to create record with random str ID for [%s]: %w", kind, err)
 	}
-	key, isPartial, err := getDatastoreKey(c, recordKey)
+	key, isPartial, err := getDatastoreKey(recordKey)
 	if err != nil {
 		return wrapErr(err)
 	}
 	if isPartial {
 		if idGenerator := options.IDGenerator(); idGenerator != nil {
 			recordExists := func(key *dal.Key) error {
-				k, _, err := getDatastoreKey(c, key)
+				k, _, err := getDatastoreKey(key)
 				if err != nil {
 					return err
 				}
@@ -93,7 +93,7 @@ func insert(c context.Context, record dal.Record, insert inserter, exists existe
 			insertRandom := func(record dal.Record) error {
 				return insert(key, false, record.Data())
 			}
-			return dal.InsertWithRandomID(c, record, idGenerator, 5, recordExists, insertRandom)
+			return dal.InsertWithRandomID(ctx, record, idGenerator, 5, recordExists, insertRandom)
 		}
 
 		panic(fmt.Sprintf("database.insert() called for key with incomplete ID: %+v", key))

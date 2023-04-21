@@ -21,7 +21,11 @@ func (db database) GetMulti(c context.Context, records []dal.Record) error {
 }
 
 func getMulti(records []dal.Record, getMulti multiGetter) (err error) {
-	keys, values := datastoreKeysAndValues(records)
+	var keys []*datastore.Key
+	var values []any
+	if keys, values, err = datastoreKeysAndValues(records); err != nil {
+		return err
+	}
 	if err := getMulti(keys, values); err != nil {
 		switch err := err.(type) {
 		case datastore.MultiError:

@@ -10,18 +10,18 @@ import (
 
 type deleter = func(key *datastore.Key) error
 
-func (tx transaction) Delete(ctx context.Context, key *dal.Key) error {
-	return delete(ctx, key, tx.datastoreTx.Delete)
+func (tx transaction) Delete(_ context.Context, key *dal.Key) error {
+	return runDeleter(key, tx.datastoreTx.Delete)
 }
 
-func (db database) Delete(c context.Context, record dal.Record) (err error) {
-	return delete(c, record.Key(), func(key *datastore.Key) error {
-		return db.client.Delete(c, key)
+func (db database) Delete(ctx context.Context, record dal.Record) (err error) {
+	return runDeleter(record.Key(), func(key *datastore.Key) error {
+		return db.client.Delete(ctx, key)
 	})
 }
 
-func delete(ctx context.Context, dalgoKey *dal.Key, delete deleter) error {
-	datastoreKey, isIncomplete, err := getDatastoreKey(ctx, dalgoKey)
+func runDeleter(dalgoKey *dal.Key, delete deleter) error {
+	datastoreKey, isIncomplete, err := getDatastoreKey(dalgoKey)
 	if err != nil {
 		return err
 	}

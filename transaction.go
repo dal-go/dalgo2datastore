@@ -83,25 +83,25 @@ func (tx transaction) Options() dal.TransactionOptions {
 	return tx.dalgoTxOptions
 }
 
-func (tx transaction) Set(c context.Context, record dal.Record) error {
+func (tx transaction) Set(ctx context.Context, record dal.Record) error {
 	data := record.Data()
-	log.Debugf(c, "data: %+v", data)
+	log.Debugf(ctx, "data: %+v", data)
 	if data == nil {
 		panic("record.Data() == nil")
 	}
-	if key, isIncomplete, err := getDatastoreKey(c, record.Key()); err != nil {
+	if key, isIncomplete, err := getDatastoreKey(record.Key()); err != nil {
 		return err
 	} else if isIncomplete {
-		log.Errorf(c, "database.Update() called for incomplete key, will insert.")
+		log.Errorf(ctx, "database.Update() called for incomplete key, will insert.")
 		panic("not implemented")
-		//return gaeDb.Insert(c, record, dal.NewInsertOptions(dal.WithRandomStringID(5)))
-	} else if _, err = Put(c, tx.db.client, key, data); err != nil {
+		//return gaeDb.Insert(ctx, record, dal.NewInsertOptions(dal.WithRandomStringID(5)))
+	} else if _, err = Put(ctx, tx.db.client, key, data); err != nil {
 		return fmt.Errorf("failed to update %s: %w", key2str(key), err)
 	}
 	return nil
 }
 
-func (tx transaction) SetMultiOld(c context.Context, records []dal.Record) (err error) { // TODO: Rename to PutMulti?
+func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (err error) { // TODO: Rename to PutMulti?
 
 	keys := make([]*datastore.Key, len(records))
 	values := make([]any, len(records))
@@ -113,7 +113,7 @@ func (tx transaction) SetMultiOld(c context.Context, records []dal.Record) (err 
 			panic(fmt.Sprintf("records[%v] is nil: %v", i, record))
 		}
 		isIncomplete := false
-		if keys[i], isIncomplete, err = getDatastoreKey(c, record.Key()); err != nil {
+		if keys[i], isIncomplete, err = getDatastoreKey(record.Key()); err != nil {
 			return
 		} else if isIncomplete {
 			insertedIndexes = append(insertedIndexes, i)
@@ -123,9 +123,9 @@ func (tx transaction) SetMultiOld(c context.Context, records []dal.Record) (err 
 		}
 	}
 
-	// logKeys(c, "database.SetMulti", keys)
+	// logKeys(ctx, "database.SetMulti", keys)
 
-	if keys, err = PutMulti(c, tx.db.client, keys, values); err != nil {
+	if keys, err = PutMulti(ctx, tx.db.client, keys, values); err != nil {
 		switch err := err.(type) {
 		case datastore.MultiError:
 			if len(err) == len(records) {
