@@ -12,7 +12,7 @@ require (
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
-//replace github.com/dal-go/dalgo-end2end-tests => ../dalgo-end2end-tests
+replace github.com/dal-go/dalgo-end2end-tests => ../dalgo-end2end-tests
 
 require (
 	cloud.google.com/go v0.110.0 // indirect

@@ -24,8 +24,9 @@ func (d *datastoreReader) Next() (record dal.Record, err error) {
 	if limit := d.query.Limit(); limit > 0 && d.i >= limit {
 		return nil, dal.ErrNoMoreRecords
 	}
-	from := d.query.From()
+
 	if into := d.query.Into(); into == nil {
+		from := d.query.From()
 		record = dal.NewRecordWithIncompleteKey(from.Name, d.query.IDKind(), nil)
 	} else {
 		record = into()
@@ -41,12 +42,10 @@ func (d *datastoreReader) Next() (record dal.Record, err error) {
 		}
 		return record, err
 	}
-	idKind := record.Key().IDKind
-	k := dal.NewIncompleteKey(from.Name, idKind, nil)
-	if k.ID, err = idFromKey(key, idKind); err != nil {
+	k := record.Key()
+	if k.ID, err = idFromDataStoreKey(key, k.IDKind); err != nil {
 		return record, err
 	}
-	record = dal.NewRecordWithData(k, record.Data())
 	d.i++
 	return
 }

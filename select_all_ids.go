@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-func idFromKey(key *datastore.Key, idKind reflect.Kind) (id any, err error) {
+func idFromDataStoreKey(key *datastore.Key, idKind reflect.Kind) (id any, err error) {
 	switch idKind {
 	case reflect.Invalid:
 		return nil, errors.New("id kind is 0 e.g. 'reflect.Invalid'")
