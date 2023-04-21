@@ -29,7 +29,7 @@ func dalQuery2datastoreQuery(query dal.Query) (q *datastore.Query, err error) {
 
 func applyOrderBy(orderBy []dal.OrderExpression, q *datastore.Query) (*datastore.Query, error) {
 	for _, o := range orderBy {
-		expression := o.String()
+		expression := o.Expression().String()
 		if o.Descending() {
 			expression = "-" + expression
 		}
