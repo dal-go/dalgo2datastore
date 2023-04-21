@@ -43,7 +43,7 @@ func (d *datastoreReader) Next() (record dal.Record, err error) {
 		return record, err
 	}
 	k := record.Key()
-	if k.ID, err = idFromDataStoreKey(key, k.IDKind); err != nil {
+	if k.ID, err = idFromDatastoreKey(key, k.IDKind); err != nil {
 		return record, err
 	}
 	d.i++

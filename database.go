@@ -75,14 +75,14 @@ func getDatastoreKey(dalKey *dal.Key) (datastoreKey *datastore.Key, isPartial bo
 		if ref.ID == nil {
 			datastoreKey = NewIncompleteKey(ref.Collection(), nil)
 		} else {
-			switch v := ref.ID.(type) {
+			switch id := ref.ID.(type) {
 			case string:
-				id := dal.EscapeID(v)
+				//id = dal.EscapeID(id)
 				datastoreKey = datastore.NameKey(ref.Collection(), id, nil)
 			case int:
-				datastoreKey = datastore.IDKey(ref.Collection(), (int64)(v), nil)
+				datastoreKey = datastore.IDKey(ref.Collection(), (int64)(id), nil)
 			default:
-				err = fmt.Errorf("unsupported ID type: %T", ref.ID)
+				err = fmt.Errorf("unsupported ID type: %T", id)
 			}
 		}
 	}

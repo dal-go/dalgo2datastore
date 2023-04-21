@@ -101,7 +101,12 @@ func startDatastoreEmulator(t *testing.T) (cmd *exec.Cmd, stdout, stderr *bytes.
 
 	// If port is busy run in terminal: kill -9 $(lsof -ti:8081)
 
-	cmd = exec.Command("gcloud", "beta", "emulators", "datastore", "start", "--quiet", "--no-store-on-disk", "--project", gCloudProjectID)
+	cmd = exec.Command("gcloud", "beta", "emulators", "datastore", "start",
+		"--quiet",
+		"--no-store-on-disk",
+		"--project", gCloudProjectID,
+		"--consistency=1",
+	)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 	//cmd.Env = []string{"CLOUDSDK_CORE_PROJECT=" + gCloudProjectID}
