@@ -185,5 +185,5 @@ func testEndToEnd(t *testing.T) {
 		t.Fatalf("Failed to create datastore client: %v", err)
 	}
 	assert.NotNil(t, db)
-	end2end.TestDalgoDB(t, db)
+	end2end.TestDalgoDB(t, db, nil, true)
 }
