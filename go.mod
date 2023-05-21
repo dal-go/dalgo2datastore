@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/datastore v1.11.0
 	github.com/dal-go/dalgo v0.2.30
-	github.com/dal-go/dalgo-end2end-tests v0.0.21
+	github.com/dal-go/dalgo-end2end-tests v0.0.22
 	github.com/stretchr/testify v1.8.3
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.123.0
