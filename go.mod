@@ -8,7 +8,7 @@ require (
 	github.com/dal-go/dalgo-end2end-tests v0.0.23
 	github.com/stretchr/testify v1.8.4
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.126.0
+	google.golang.org/api v0.127.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
@@ -23,7 +23,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/s2a-go v0.1.4 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.2.4 // indirect
 	github.com/googleapis/gax-go/v2 v2.10.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/strongo/random v0.0.1 // indirect
