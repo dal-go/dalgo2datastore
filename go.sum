@@ -14,6 +14,8 @@ cloud.google.com/go/datastore v1.11.0 h1:iF6I/HaLs3Ado8uRKMvZRvF/ZLkWaWE9i8AiHzb
 cloud.google.com/go/datastore v1.11.0/go.mod h1:TvGxBIHCS50u8jzG+AW/ppf87v1of8nwzFNgEZU1D3c=
 cloud.google.com/go/datastore v1.12.0 h1:e713dRZv/yyGRHJ4MQLhAcuxlSzqXlYvEYFMKM7q0u4=
 cloud.google.com/go/datastore v1.12.0/go.mod h1:KjdB88W897MRITkvWWJrg2OUtrR5XVj1EoLgSp6/N70=
+cloud.google.com/go/datastore v1.12.1 h1:i8HMKsqg/Sl3ZlOTGl471Z8j2uKtbRDT9VXJUIVlMik=
+cloud.google.com/go/datastore v1.12.1/go.mod h1:KjdB88W897MRITkvWWJrg2OUtrR5XVj1EoLgSp6/N70=
 cloud.google.com/go/longrunning v0.4.1 h1:v+yFJOfKC3yZdY6ZUI933pIYdhyhV8S3NpWrXWmg7jM=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
