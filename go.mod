@@ -3,12 +3,12 @@ module github.com/dal-go/dalgo2datastore
 go 1.20
 
 require (
-	cloud.google.com/go/datastore v1.12.1
+	cloud.google.com/go/datastore v1.13.0
 	github.com/dal-go/dalgo v0.2.31
 	github.com/dal-go/dalgo-end2end-tests v0.0.23
 	github.com/stretchr/testify v1.8.4
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.133.0
+	google.golang.org/api v0.134.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
