@@ -27,3 +27,5 @@ jobs:
       - run: gcloud version
 
       - uses: strongo/go-ci-action@v1.0.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
