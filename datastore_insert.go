@@ -65,6 +65,7 @@ func insert(ctx context.Context, record dal.Record, insert inserter, exists exis
 	}
 	recordKey := record.Key()
 	kind := recordKey.Collection()
+	record.SetError(nil)
 	entity := record.Data()
 	if entity == nil {
 		panic("record == nil")

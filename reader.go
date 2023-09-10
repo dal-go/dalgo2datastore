@@ -31,9 +31,10 @@ func (d *datastoreReader) Next() (record dal.Record, err error) {
 	} else {
 		record = into()
 	}
+	record.SetError(nil)
 	data := record.Data()
-	if rd, ok := data.(dal.RecordData); ok {
-		data = rd.DTO()
+	if rd, ok := data.(dal.DataWrapper); ok {
+		data = rd.Data()
 	}
 	var key *datastore.Key
 	if key, err = d.iterator.Next(data); err != nil {

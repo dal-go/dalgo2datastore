@@ -16,9 +16,10 @@ func datastoreKeysAndValues(records []dal.Record) (keys []*datastore.Key, values
 		if keys[i], _, err = getDatastoreKey(recordKey); err != nil {
 			return
 		}
+		record.SetError(nil)
 		data := record.Data()
-		if recordData, ok := data.(dal.RecordData); ok {
-			data = recordData.DTO()
+		if recordData, ok := data.(dal.DataWrapper); ok {
+			data = recordData.Data()
 		}
 		values[i] = data
 	}

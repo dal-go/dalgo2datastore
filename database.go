@@ -9,7 +9,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-var _ dal.Database = (*database)(nil)
+var _ dal.DB = (*database)(nil)
 
 type database struct {
 	ProjectID string
@@ -24,16 +24,16 @@ func (db database) ID() string {
 	return db.ProjectID
 }
 
-func (db database) Client() dal.ClientInfo {
-	return dal.NewClientInfo("datastore", "v1")
+func (db database) Adapter() dal.Adapter {
+	return dal.NewAdapter("datastore", "v1")
 }
 
-func (database) Upsert(c context.Context, record dal.Record) error {
+func (database) Upsert(_ context.Context, _ dal.Record) error {
 	panic("implement me")
 }
 
 // NewDatabase create database provider to Google Datastore
-func NewDatabase(ctx context.Context, projectID string) (db dal.Database, err error) {
+func NewDatabase(ctx context.Context, projectID string) (db dal.DB, err error) {
 	var database database
 	database.ProjectID = projectID
 	database.client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
