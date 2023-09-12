@@ -4,11 +4,11 @@ go 1.20
 
 require (
 	cloud.google.com/go/datastore v1.14.0
-	github.com/dal-go/dalgo v0.10.0
-	github.com/dal-go/dalgo-end2end-tests v0.0.31
+	github.com/dal-go/dalgo v0.10.1
+	github.com/dal-go/dalgo-end2end-tests v0.0.32
 	github.com/stretchr/testify v1.8.4
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.139.0
+	google.golang.org/api v0.140.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
@@ -39,7 +39,7 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230911183012-2d3300fd4832 // indirect
 	google.golang.org/grpc v1.58.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
