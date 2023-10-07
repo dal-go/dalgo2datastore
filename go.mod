@@ -3,7 +3,7 @@ module github.com/dal-go/dalgo2datastore
 go 1.20
 
 require (
-	cloud.google.com/go/datastore v1.14.0
+	cloud.google.com/go/datastore v1.15.0
 	github.com/dal-go/dalgo v0.12.0
 	github.com/dal-go/dalgo-end2end-tests v0.0.34
 	github.com/stretchr/testify v1.8.4
