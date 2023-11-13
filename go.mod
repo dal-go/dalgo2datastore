@@ -1,11 +1,13 @@
 module github.com/dal-go/dalgo2datastore
 
-go 1.20
+go 1.21
+
+toolchain go1.21.4
 
 require (
 	cloud.google.com/go/datastore v1.15.0
 	github.com/dal-go/dalgo v0.12.0
-	github.com/dal-go/dalgo-end2end-tests v0.0.34
+	github.com/dal-go/dalgo-end2end-tests v0.0.35
 	github.com/stretchr/testify v1.8.4
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.150.0
@@ -27,7 +29,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/strongo/random v0.0.1 // indirect
-	github.com/strongo/validation v0.0.5 // indirect
+	github.com/strongo/validation v0.0.6 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
