@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.22.4
 
 require (
-	cloud.google.com/go/datastore v1.17.0
+	cloud.google.com/go/datastore v1.17.1
 	github.com/dal-go/dalgo v0.12.1
 	github.com/dal-go/dalgo-end2end-tests v0.0.36
 	github.com/stretchr/testify v1.9.0
@@ -51,7 +51,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240528184218-531527333157 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240521202816-d264139d666e // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240604185151-ef581f913117 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
 	google.golang.org/grpc v1.64.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
