@@ -10,7 +10,7 @@ require (
 	github.com/dal-go/dalgo-end2end-tests v0.0.36
 	github.com/stretchr/testify v1.9.0
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.190.0
+	google.golang.org/api v0.191.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
@@ -43,11 +43,11 @@ require (
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/oauth2 v0.21.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/oauth2 v0.22.0 // indirect
+	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
+	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240730163845-b1a4ccb954bf // indirect
