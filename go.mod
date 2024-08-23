@@ -5,7 +5,7 @@ go 1.23
 toolchain go1.23.0
 
 require (
-	cloud.google.com/go/datastore v1.18.0
+	cloud.google.com/go/datastore v1.19.0
 	github.com/dal-go/dalgo v0.12.2
 	github.com/dal-go/dalgo-end2end-tests v0.0.37
 	github.com/stretchr/testify v1.9.0
@@ -20,7 +20,7 @@ require (
 	cloud.google.com/go v0.115.1 // indirect
 	cloud.google.com/go/auth v0.9.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
-	cloud.google.com/go/compute v1.27.4 // indirect
+	cloud.google.com/go/compute v1.27.5 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -50,7 +50,7 @@ require (
 	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto v0.0.0-20240814211410-ddb44dafa142 // indirect
+	google.golang.org/genproto v0.0.0-20240822170219-fc7c04adadcd // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
 	google.golang.org/grpc v1.65.0 // indirect
