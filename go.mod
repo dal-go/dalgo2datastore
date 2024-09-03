@@ -7,7 +7,7 @@ toolchain go1.23.0
 require (
 	cloud.google.com/go/datastore v1.19.0
 	github.com/dal-go/dalgo v0.13.0
-	github.com/dal-go/dalgo-end2end-tests v0.0.37
+	github.com/dal-go/dalgo-end2end-tests v0.0.38
 	github.com/stretchr/testify v1.9.0
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.195.0
