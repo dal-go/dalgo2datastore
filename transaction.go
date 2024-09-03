@@ -66,16 +66,21 @@ type transaction struct {
 	dal.QueryExecutor
 }
 
+func (tx transaction) InsertMulti(_ context.Context, _ []dal.Record, _ ...dal.InsertOption) error {
+	//TODO implement me
+	panic("implement me")
+}
+
 // ID returns empty string as datastore doesn't support long-lasting transactions
 func (tx transaction) ID() string {
 	return ""
 }
 
-func (tx transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
+func (tx transaction) Update(_ context.Context, _ *dal.Key, _ []dal.Update, _ ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
-func (tx transaction) UpdateMulti(c context.Context, keys []*dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
+func (tx transaction) UpdateMulti(_ context.Context, _ []*dal.Key, _ []dal.Update, _ ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
