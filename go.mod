@@ -5,7 +5,7 @@ go 1.23
 toolchain go1.23.2
 
 require (
-	cloud.google.com/go/datastore v1.19.0
+	cloud.google.com/go/datastore v1.20.0
 	github.com/dal-go/dalgo v0.14.0
 	github.com/dal-go/dalgo-end2end-tests v0.0.41
 	github.com/stretchr/testify v1.9.0
