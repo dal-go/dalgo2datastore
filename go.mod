@@ -2,7 +2,7 @@ module github.com/dal-go/dalgo2datastore
 
 go 1.23
 
-toolchain go1.23.2
+toolchain go1.23.3
 
 require (
 	cloud.google.com/go/datastore v1.20.0
@@ -10,7 +10,7 @@ require (
 	github.com/dal-go/dalgo-end2end-tests v0.0.41
 	github.com/stretchr/testify v1.9.0
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.204.0
+	google.golang.org/api v0.205.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
@@ -18,7 +18,7 @@ require (
 
 require (
 	cloud.google.com/go v0.116.0 // indirect
-	cloud.google.com/go/auth v0.10.0 // indirect
+	cloud.google.com/go/auth v0.10.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.5 // indirect
 	cloud.google.com/go/compute/metadata v0.5.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
