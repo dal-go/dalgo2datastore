@@ -7,7 +7,7 @@ import (
 )
 
 func dalQuery2datastoreQuery(query dal.Query) (q *datastore.Query, err error) {
-	q = datastore.NewQuery(query.From().Name)
+	q = datastore.NewQuery(query.From().Name())
 	if limit := query.Limit(); limit > 0 {
 		q = q.Limit(limit)
 	}
@@ -54,7 +54,7 @@ func applyWhere(where dal.Condition, q *datastore.Query) (*datastore.Query, erro
 				default:
 					operator = string(comparison.Operator)
 				}
-				q = q.FilterField(left.Name, operator, right.Value)
+				q = q.FilterField(left.Name(), operator, right.Value)
 			default:
 				return q, fmt.Errorf("only FieldRef are supported as left operand, got: %T", right)
 			}
