@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/dalgo/update"
 	"github.com/strongo/log"
 )
 
@@ -76,11 +77,15 @@ func (tx transaction) ID() string {
 	return ""
 }
 
-func (tx transaction) Update(_ context.Context, _ *dal.Key, _ []dal.Update, _ ...dal.Precondition) error {
+func (tx transaction) Update(_ context.Context, _ *dal.Key, _ []update.Update, _ ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
-func (tx transaction) UpdateMulti(_ context.Context, _ []*dal.Key, _ []dal.Update, _ ...dal.Precondition) error {
+func (tx transaction) UpdateRecord(ctx context.Context, record dal.Record, updates []update.Update, preconditions ...dal.Precondition) error {
+	return tx.Update(ctx, record.Key(), updates, preconditions...)
+}
+
+func (tx transaction) UpdateMulti(_ context.Context, _ []*dal.Key, _ []update.Update, _ ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
