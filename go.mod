@@ -1,6 +1,8 @@
 module github.com/dal-go/dalgo2datastore
 
-go 1.23
+go 1.23.0
+
+toolchain go1.24.0
 
 require (
 	cloud.google.com/go/datastore v1.20.0
@@ -8,7 +10,7 @@ require (
 	github.com/dal-go/dalgo-end2end-tests v0.0.46
 	github.com/stretchr/testify v1.10.0
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.221.0
+	google.golang.org/api v0.222.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
