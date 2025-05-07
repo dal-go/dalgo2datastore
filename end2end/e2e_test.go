@@ -46,6 +46,7 @@ func TestEndToEnd(t *testing.T) {
 func handleCommandOutput(t *testing.T, logType string, output *bytes.Buffer, emulatorExited *bool) {
 	var s string
 	for {
+		//nolint:staticcheck // QF1006: intentionally written this way
 		if *emulatorExited {
 			break
 		}
