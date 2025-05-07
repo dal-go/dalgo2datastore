@@ -38,7 +38,7 @@ func getMulti(records []dal.Record, getMulti multiGetter) (err error) {
 		}
 	}
 	for _, record := range records {
-		record.SetError(dal.NoError)
+		record.SetError(dal.ErrNoError)
 	}
 	return nil
 }
