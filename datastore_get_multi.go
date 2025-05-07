@@ -26,10 +26,10 @@ func getMulti(records []dal.Record, getMulti multiGetter) (err error) {
 	if keys, values, err = datastoreKeysAndValues(records); err != nil {
 		return err
 	}
-	if err := getMulti(keys, values); err != nil {
-		switch err := err.(type) {
+	if err = getMulti(keys, values); err != nil {
+		switch err2 := err.(type) {
 		case datastore.MultiError:
-			if err = handleMultiError(err, records, operationGet); len(err) > 0 {
+			if err2 = handleMultiError(err2, records, operationGet); len(err2) > 0 {
 				return err
 			}
 			return nil
