@@ -51,7 +51,7 @@ func existsByKey(key *dal.Key, get getter) error {
 	return getByKey(key, get, &struct{}{})
 }
 
-func getByKey(key *dal.Key, get getter, dst any) (err error) {
+func getByKey(key *dal.Key, get getter, dst any) error {
 	datastoreKey, isIncomplete, err := getDatastoreKey(key)
 	if err != nil {
 		return err
