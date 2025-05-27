@@ -20,7 +20,7 @@ package dalgo2datastore
 //	//c := gomock.NewController(t)
 //	//mockDB = mock_dal.NewMockDatabase(c)
 //
-//	Get = func(c context.Context, key *datastore.Key, val interface{}) error {
+//	Get = func(c context.Context, key *datastore.Key, val any) error {
 //		panic("not implemented")
 //		//if c == nil {
 //		//	panic("c == nil")
@@ -47,7 +47,7 @@ package dalgo2datastore
 //		//}
 //	}
 //
-//	Put = func(c context.Context, key *datastore.Key, val interface{}) (*datastore.Key, error) {
+//	Put = func(c context.Context, key *datastore.Key, val any) (*datastore.Key, error) {
 //		if c == nil {
 //			panic("c == nil")
 //		}
@@ -82,7 +82,7 @@ package dalgo2datastore
 //		//return NewKey(c, mockKey.Kind, mockKey.StrID, mockKey.IntID, nil), nil
 //	}
 //
-//	PutMulti = func(c context.Context, keys []*datastore.Key, vals interface{}) ([]*datastore.Key, error) {
+//	PutMulti = func(c context.Context, keys []*datastore.Key, vals any) ([]*datastore.Key, error) {
 //		entityHolders := vals.([]dal.Record)
 //		var err error
 //		var errs []error

@@ -192,7 +192,7 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 //	key := record.Key()
 //	docRef := t.dtb.doc(key)
 //	docSnapshot, err := t.tx.Get(docRef)
-//	return docSnapshotToRecord(err, docSnapshot, record, func(ds *firestore.DocumentSnapshot, p interface{}) error {
+//	return docSnapshotToRecord(err, docSnapshot, record, func(ds *firestore.DocumentSnapshot, p any) error {
 //		return ds.DataTo(p)
 //	})
 //}
@@ -217,7 +217,7 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 //		return err
 //	}
 //	for i, d := range ds {
-//		err = docSnapshotToRecord(nil, d, records[i], func(ds *firestore.DocumentSnapshot, p interface{}) error {
+//		err = docSnapshotToRecord(nil, d, records[i], func(ds *firestore.DocumentSnapshot, p any) error {
 //			return ds.DataTo(p)
 //		})
 //		if err != nil {

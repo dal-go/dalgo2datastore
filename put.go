@@ -9,7 +9,7 @@ import (
 )
 
 // Put saves record to datastore
-var Put = func(c context.Context, client *datastore.Client, key *datastore.Key, val interface{}) (*datastore.Key, error) {
+var Put = func(c context.Context, client *datastore.Client, key *datastore.Key, val any) (*datastore.Key, error) {
 	if val == nil {
 		panic("val == nil")
 	}
@@ -31,7 +31,7 @@ var Put = func(c context.Context, client *datastore.Client, key *datastore.Key, 
 	return key, err
 }
 
-func logEntityProperties(buf *bytes.Buffer, prefix string, val interface{}) (err error) {
+func logEntityProperties(buf *bytes.Buffer, prefix string, val any) (err error) {
 	var props []datastore.Property
 	if propertyLoadSaver, ok := val.(datastore.PropertyLoadSaver); ok {
 		if props, err = propertyLoadSaver.Save(); err != nil {
@@ -40,13 +40,13 @@ func logEntityProperties(buf *bytes.Buffer, prefix string, val interface{}) (err
 	} else if props, err = datastore.SaveStruct(val); err != nil {
 		return fmt.Errorf("failed to call datastore.SaveStruct(): %w", err)
 	}
-	fmt.Fprint(buf, prefix)
+	_, _ = fmt.Fprint(buf, prefix)
 	var prevPropName string
 	for _, prop := range props {
 		if prop.Name == prevPropName {
-			fmt.Fprintf(buf, ", %v", prop.Value)
+			_, _ = fmt.Fprintf(buf, ", %v", prop.Value)
 		} else {
-			fmt.Fprintf(buf, "\n\t%v: %v", prop.Name, prop.Value)
+			_, _ = fmt.Fprintf(buf, "\n\t%v: %v", prop.Name, prop.Value)
 		}
 		prevPropName = prop.Name
 	}
@@ -54,7 +54,7 @@ func logEntityProperties(buf *bytes.Buffer, prefix string, val interface{}) (err
 }
 
 // PutMulti saves multipe entities to datastore
-var PutMulti = func(c context.Context, client *datastore.Client, keys []*datastore.Key, vals interface{}) ([]*datastore.Key, error) {
+var PutMulti = func(c context.Context, client *datastore.Client, keys []*datastore.Key, vals any) ([]*datastore.Key, error) {
 	if LoggingEnabled {
 		//buf := new(bytes.Buffer)
 		//buf.WriteString(" => \n")

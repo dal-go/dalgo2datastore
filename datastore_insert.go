@@ -9,11 +9,11 @@ import (
 	"github.com/strongo/log"
 )
 
-type inserter = func(key *datastore.Key, isPartialKey bool, dst interface{}) error
-type exister = func(key *datastore.Key) error
+type dsInserter = func(key *datastore.Key, isPartialKey bool, dst any) error
+type dsExister = func(key *datastore.Key) error
 
 func (tx transaction) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) error {
-	var inserter = func(key *datastore.Key, isPartialKey bool, dst interface{}) (err error) {
+	var inserter = func(key *datastore.Key, isPartialKey bool, dst any) (err error) {
 		var pendingKey *datastore.PendingKey
 		pendingKey, err = tx.datastoreTx.Put(key, dst)
 		if err != nil {
@@ -42,7 +42,7 @@ func (db database) Insert(c context.Context, record dal.Record, opts ...dal.Inse
 		return errors.New("not allowed to insert nil data")
 	}
 	options := dal.NewInsertOptions(opts...)
-	var inserter = func(key *datastore.Key, isPartialKey bool, dst interface{}) (err error) {
+	var inserter = func(key *datastore.Key, isPartialKey bool, dst any) (err error) {
 		if key, err = db.client.Put(c, key, dst); err != nil {
 			return err
 		}
@@ -59,7 +59,7 @@ func updatePartialKey(key *dal.Key, dsKey *datastore.Key) {
 	key.ID = dsKey.ID
 }
 
-func insert(ctx context.Context, record dal.Record, insert inserter, exists exister, options dal.InsertOptions) error {
+func insert(ctx context.Context, record dal.Record, insert dsInserter, exists dsExister, options dal.InsertOptions) error {
 	if record == nil {
 		panic("record == nil")
 	}
@@ -81,11 +81,12 @@ func insert(ctx context.Context, record dal.Record, insert inserter, exists exis
 	if isPartial {
 		if idGenerator := options.IDGenerator(); idGenerator != nil {
 			recordExists := func(key *dal.Key) error {
-				k, _, err := getDatastoreKey(key)
+				var k *datastore.Key
+				k, _, err = getDatastoreKey(key)
 				if err != nil {
 					return err
 				}
-				if err := exists(k); err == datastore.ErrNoSuchEntity {
+				if err = exists(k); errors.Is(datastore.ErrNoSuchEntity, err) {
 					return dal.ErrRecordNotFound
 				} else {
 					return err
@@ -94,7 +95,7 @@ func insert(ctx context.Context, record dal.Record, insert inserter, exists exis
 			insertRandom := func(record dal.Record) error {
 				return insert(key, false, record.Data())
 			}
-			return dal.InsertWithRandomID(ctx, record, idGenerator, 5, recordExists, insertRandom)
+			return dal.InsertWithIdGenerator(ctx, record, idGenerator, 5, recordExists, insertRandom)
 		}
 
 		panic(fmt.Sprintf("database.insert() called for key with incomplete ID: %+v", key))
