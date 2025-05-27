@@ -48,7 +48,7 @@ func handleGetByKeyError(key *dal.Key, err error) error {
 }
 
 func existsByKey(key *dal.Key, get getter) error {
-	return getByKey(key, get, make(map[string]any))
+	return getByKey(key, get, &struct{}{})
 }
 
 func getByKey(key *dal.Key, get getter, dst any) (err error) {
