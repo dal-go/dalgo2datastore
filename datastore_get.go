@@ -48,7 +48,14 @@ func handleGetByKeyError(key *dal.Key, err error) error {
 }
 
 func existsByKey(key *dal.Key, get getter) error {
-	return getByKey(key, get, &struct{}{})
+	if err := getByKey(key, get, &struct{}{}); err != nil {
+		var errFieldMismatch *datastore.ErrFieldMismatch
+		if errors.As(err, &errFieldMismatch) {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 func getByKey(key *dal.Key, get getter, dst any) error {
