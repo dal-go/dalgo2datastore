@@ -86,7 +86,7 @@ func insert(ctx context.Context, record dal.Record, insert dsInserter, exists ds
 				if err != nil {
 					return err
 				}
-				if err = exists(k); errors.Is(datastore.ErrNoSuchEntity, err) {
+				if err = exists(k); errors.Is(err, datastore.ErrNoSuchEntity) {
 					return dal.ErrRecordNotFound
 				} else {
 					return err
