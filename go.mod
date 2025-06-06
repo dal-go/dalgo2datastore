@@ -2,7 +2,7 @@ module github.com/dal-go/dalgo2datastore
 
 go 1.23.0
 
-toolchain go1.24.3
+toolchain go1.24.4
 
 require (
 	cloud.google.com/go/datastore v1.20.0
