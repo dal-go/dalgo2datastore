@@ -2,12 +2,12 @@ module github.com/dal-go/dalgo2datastore
 
 go 1.23.0
 
-toolchain go1.24.4
+toolchain go1.24.5
 
 require (
 	cloud.google.com/go/datastore v1.20.0
 	github.com/dal-go/dalgo v0.24.0
-	github.com/dal-go/dalgo-end2end-tests v0.0.57
+	github.com/dal-go/dalgo-end2end-tests v0.0.58
 	github.com/stretchr/testify v1.10.0
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.240.0
