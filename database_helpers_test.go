@@ -81,7 +81,8 @@ func TestTransactionContextHelpers(t *testing.T) {
 	ctxTx := context.WithValue(ctx, &isInTransactionFlag, true)
 	assert.True(t, db.IsInTransaction(ctxTx))
 	// NonTransactionalContext returns embedded if present
-	nonTx := context.WithValue(ctx, "k", "v")
+	type key string
+	nonTx := context.WithValue(ctx, key("k"), "v")
 	ctxTx2 := context.WithValue(ctx, &nonTransactionalContextKey, nonTx)
 	actual := db.NonTransactionalContext(ctxTx2)
 	assert.Equal(t, nonTx, actual)
