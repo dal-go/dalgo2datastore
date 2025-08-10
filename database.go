@@ -28,6 +28,10 @@ func (db database) Adapter() dal.Adapter {
 	return dal.NewAdapter("datastore", "v1")
 }
 
+func (db database) Schema() dal.Schema {
+	return nil
+}
+
 func (database) Upsert(_ context.Context, _ dal.Record) error {
 	panic("implement me")
 }
