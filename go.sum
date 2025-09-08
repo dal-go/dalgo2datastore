@@ -58,6 +58,8 @@ github.com/dal-go/dalgo-end2end-tests v0.0.62 h1:UDA2EPEHd9Mb9qsKt6vQrbfIZ3BD67Y
 github.com/dal-go/dalgo-end2end-tests v0.0.62/go.mod h1:qzexhM+FLUQM5m/sbClDcsgA7TCSYQ3qS0bHGS9Yex0=
 github.com/dal-go/dalgo-end2end-tests v0.0.63 h1:LmL5T3cmPqRZMppFZ0yXH8zjE4pOkrdpggIY9445Nio=
 github.com/dal-go/dalgo-end2end-tests v0.0.63/go.mod h1:pRWhdgcU/61SDooBFt5l0Gye5aD3mCqUjxkWi2fsb5Q=
+github.com/dal-go/dalgo-end2end-tests v0.0.64 h1:3BzPu8igDAfiK3FnN6BfqjS+BAxdTUQ2T15Niddn4aU=
+github.com/dal-go/dalgo-end2end-tests v0.0.64/go.mod h1:8CKMCfJxtmHHEPsST9K01qBwMJLcb39Xbx++152qaGg=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
