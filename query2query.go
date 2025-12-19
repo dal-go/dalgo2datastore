@@ -1,30 +1,37 @@
 package dalgo2datastore
 
 import (
-	"cloud.google.com/go/datastore"
 	"fmt"
+
+	"cloud.google.com/go/datastore"
 	"github.com/dal-go/dalgo/dal"
 )
 
 func dalQuery2datastoreQuery(query dal.Query) (q *datastore.Query, err error) {
-	q = datastore.NewQuery(query.From().Name())
-	if limit := query.Limit(); limit > 0 {
-		q = q.Limit(limit)
-	}
-	if offset := query.Offset(); offset > 0 {
-		q.Offset(offset)
-	}
-	if where := query.Where(); where != nil {
-		if q, err = applyWhere(query.Where(), q); err != nil {
-			return q, err
+	switch query := query.(type) {
+	case dal.StructuredQuery:
+		q = datastore.NewQuery(query.From().Base().Name())
+		if limit := query.Limit(); limit > 0 {
+			q = q.Limit(limit)
 		}
-	}
-	if orderBy := query.OrderBy(); len(orderBy) > 0 {
-		if q, err = applyOrderBy(orderBy, q); err != nil {
-			return q, err
+		if offset := query.Offset(); offset > 0 {
+			q.Offset(offset)
 		}
+		if where := query.Where(); where != nil {
+			if q, err = applyWhere(query.Where(), q); err != nil {
+				return q, err
+			}
+		}
+		if orderBy := query.OrderBy(); len(orderBy) > 0 {
+			if q, err = applyOrderBy(orderBy, q); err != nil {
+				return q, err
+			}
+		}
+		return q, nil
+
+	default:
+		return nil, fmt.Errorf("dalQuery2datastoreQuery: unsupported query type: %T", q)
 	}
-	return q, nil
 }
 
 func applyOrderBy(orderBy []dal.OrderExpression, q *datastore.Query) (*datastore.Query, error) {

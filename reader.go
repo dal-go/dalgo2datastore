@@ -1,9 +1,10 @@
 package dalgo2datastore
 
 import (
-	"cloud.google.com/go/datastore"
 	"errors"
 	"fmt"
+
+	"cloud.google.com/go/datastore"
 	"github.com/dal-go/dalgo/dal"
 	"google.golang.org/api/iterator"
 )
@@ -25,29 +26,34 @@ func (d *datastoreReader) Next() (record dal.Record, err error) {
 		return nil, dal.ErrNoMoreRecords
 	}
 
-	if into := d.query.Into(); into == nil {
-		from := d.query.From()
-		record = dal.NewRecordWithIncompleteKey(from.Name(), d.query.IDKind(), nil)
-	} else {
-		record = into()
-	}
-	record.SetError(nil)
-	data := record.Data()
-	if rd, ok := data.(dal.DataWrapper); ok {
-		data = rd.Data()
-	}
-	var key *datastore.Key
-	if key, err = d.iterator.Next(data); err != nil {
-		if errors.Is(err, iterator.Done) {
-			err = fmt.Errorf("%w: %v", dal.ErrNoMoreRecords, err)
+	switch query := d.query.(type) {
+	case dal.StructuredQuery:
+		if into := query.Into(); into == nil {
+			from := query.From()
+			record = dal.NewRecordWithIncompleteKey(from.Base().Name(), query.IDKind(), nil)
+		} else {
+			record = into()
 		}
-		return record, err
+		record.SetError(nil)
+		data := record.Data()
+		if rd, ok := data.(dal.DataWrapper); ok {
+			data = rd.Data()
+		}
+		var key *datastore.Key
+		if key, err = d.iterator.Next(data); err != nil {
+			if errors.Is(err, iterator.Done) {
+				err = fmt.Errorf("%w: %v", dal.ErrNoMoreRecords, err)
+			}
+			return record, err
+		}
+		k := record.Key()
+		if k.ID, err = idFromDatastoreKey(key, k.IDKind); err != nil {
+			return record, err
+		}
+		d.i++
+	default:
+		err = fmt.Errorf("%w: %T", dal.ErrNotSupported, d.query)
 	}
-	k := record.Key()
-	if k.ID, err = idFromDatastoreKey(key, k.IDKind); err != nil {
-		return record, err
-	}
-	d.i++
 	return
 }
 
