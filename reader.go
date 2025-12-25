@@ -14,11 +14,12 @@ var _ dal.Reader = (*datastoreReader)(nil)
 type datastoreReader struct {
 	i        int // iteration
 	query    dal.Query
+	client   *datastore.Client
 	iterator *datastore.Iterator
 }
 
 func (d *datastoreReader) Close() error {
-	return nil
+	return d.client.Close()
 }
 
 func (d *datastoreReader) Next() (record dal.Record, err error) {
@@ -28,11 +29,10 @@ func (d *datastoreReader) Next() (record dal.Record, err error) {
 
 	switch query := d.query.(type) {
 	case dal.StructuredQuery:
-		if into := query.Into(); into == nil {
+		record = query.IntoRecord()
+		if record == nil {
 			from := query.From()
 			record = dal.NewRecordWithIncompleteKey(from.Base().Name(), query.IDKind(), nil)
-		} else {
-			record = into()
 		}
 		record.SetError(nil)
 		data := record.Data()

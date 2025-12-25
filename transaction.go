@@ -1,9 +1,10 @@
 package dalgo2datastore
 
 import (
-	"cloud.google.com/go/datastore"
 	"context"
 	"fmt"
+
+	"cloud.google.com/go/datastore"
 	"github.com/dal-go/dalgo/dal"
 	"github.com/dal-go/dalgo/update"
 	"github.com/strongo/log"
@@ -29,7 +30,7 @@ func (db database) RunReadwriteTransaction(ctx context.Context, f dal.RWTxWorker
 func (db database) runInTransaction(c context.Context, opts []dal.TransactionOption, f func(tx transaction) error) (cmt *datastore.Commit, err error) {
 	var tx transaction
 	tx.db = db
-	tx.QueryExecutor = db.QueryExecutor
+	tx.QueryExecutor = db
 	tx.dalgoTxOptions = dal.NewTransactionOptions(opts...)
 	var dsTxOptions []datastore.TransactionOption
 	//tx.datastoreTxOptions.XG = tx.dalgoTxOptions.IsCrossGroup()

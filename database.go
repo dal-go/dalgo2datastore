@@ -1,11 +1,13 @@
 package dalgo2datastore
 
 import (
-	"cloud.google.com/go/datastore"
 	"context"
 	"errors"
 	"fmt"
+
+	"cloud.google.com/go/datastore"
 	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/dalgo/recordset"
 	"google.golang.org/api/option"
 )
 
@@ -14,7 +16,14 @@ var _ dal.DB = (*database)(nil)
 type database struct {
 	ProjectID string
 	client    *datastore.Client
-	dal.QueryExecutor
+}
+
+func (db database) ExecuteQueryToRecordsReader(ctx context.Context, query dal.Query) (dal.RecordsReader, error) {
+	return getRecordsReader(ctx, db.ProjectID, query)
+}
+
+func (db database) ExecuteQueryToRecordsetReader(_ context.Context, _ dal.Query, _ ...recordset.Option) (dal.RecordsetReader, error) {
+	return nil, dal.ErrNotImplementedYet
 }
 
 func (db database) ID() string {
@@ -41,10 +50,6 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.DB, err error) {
 	var database database
 	database.ProjectID = projectID
 	database.client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
-	var getReader = func(c context.Context, query dal.Query) (dal.Reader, error) {
-		return getReader(c, database.ProjectID, query)
-	}
-	database.QueryExecutor = dal.NewQueryExecutor(getReader)
 	return database, err
 }
 
