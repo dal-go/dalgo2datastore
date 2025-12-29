@@ -6,7 +6,7 @@ toolchain go1.25.5
 
 require (
 	cloud.google.com/go/datastore v1.21.0
-	github.com/dal-go/dalgo v0.40.2
+	github.com/dal-go/dalgo v0.41.1
 	github.com/dal-go/dalgo-end2end-tests v0.0.71
 	github.com/stretchr/testify v1.11.1
 	github.com/strongo/log v0.3.0
@@ -22,6 +22,7 @@ require (
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	github.com/RoaringBitmap/roaring v1.9.4 // indirect
+	github.com/RoaringBitmap/roaring/v2 v2.14.4 // indirect
 	github.com/bits-and-blooms/bitset v1.24.4 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
