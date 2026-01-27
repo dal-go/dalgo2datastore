@@ -10,7 +10,7 @@ require (
 	github.com/dal-go/dalgo-end2end-tests v0.0.72
 	github.com/stretchr/testify v1.11.1
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.262.0
+	google.golang.org/api v0.263.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
@@ -51,7 +51,7 @@ require (
 	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/genproto v0.0.0-20251222181119-0a764e51fe1b // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120174246-409b4a993575 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260122232226-8e98ce8d340d // indirect
 	google.golang.org/grpc v1.78.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
