@@ -37,7 +37,7 @@ func logKeys(c context.Context, f, suffix string, keys []*datastore.Key) {
 		if ks == prevKey {
 			log.Errorf(c, "Duplicate keys: "+ks)
 		}
-		buffer.WriteString(fmt.Sprintf("\t%v\n", ks))
+		fmt.Fprintf(&buffer, "\t%v\n", ks)
 		prevKey = ks
 	}
 	buffer.WriteString(")")
