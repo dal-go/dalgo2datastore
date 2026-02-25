@@ -34,6 +34,6 @@ jobs:
 
       - run: gcloud version
 
-      - uses: strongo/go-ci-action@v1.1.31
+      - uses: strongo/go-ci-action@v1.1.32
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
