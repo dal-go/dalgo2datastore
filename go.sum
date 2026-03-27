@@ -38,6 +38,8 @@ github.com/dal-go/dalgo v0.41.8 h1:ro+lY5hZrUECLCYpIV/tYm6olFK2RGX8L4+qf/lOEAg=
 github.com/dal-go/dalgo v0.41.8/go.mod h1:hSQ7sNhf5WZz/XcHgO0UKUCc24rhgU2C7fcrmcsx80U=
 github.com/dal-go/dalgo v0.41.9 h1:gZP/RkVFv5Z1tAp/WPWQ1yNDzF5MWrGe5EDjbAKgOuk=
 github.com/dal-go/dalgo v0.41.9/go.mod h1:jPNOxd415Z6KOuU7ZjdcjiRs4Vl4OkirOzyRbtuFZzI=
+github.com/dal-go/dalgo v0.41.10 h1:xs51xwNy/dXdl1bJHaIZRc/UKY1TeDg0etqWg03X4PM=
+github.com/dal-go/dalgo v0.41.10/go.mod h1:jPNOxd415Z6KOuU7ZjdcjiRs4Vl4OkirOzyRbtuFZzI=
 github.com/dal-go/dalgo-end2end-tests v0.0.72 h1:vuVyGA39kIeMJ6dXxnUlXJdDYYMr+uZNAYg0mjM6Pfk=
 github.com/dal-go/dalgo-end2end-tests v0.0.72/go.mod h1:KVqdQqnsscdZmLPvhIT1c+cZRDfSLOuOmOxUIVCVaPc=
 github.com/dal-go/dalgo-end2end-tests v0.0.73 h1:Q3r18IeGdCFQP+V4mDUjkVHbmg4Dte+1IRkMVm5rb44=
@@ -54,6 +56,8 @@ github.com/dal-go/dalgo-end2end-tests v0.0.78 h1:t9PNJkiuZpFadrHW+Ko8cB+5ASUFLXX
 github.com/dal-go/dalgo-end2end-tests v0.0.78/go.mod h1:yroRJpyFjk0NkjbuEUQD6Ps0ilGzN5KQ7O7Jqq6Tix8=
 github.com/dal-go/dalgo-end2end-tests v0.0.79 h1:vd2v2FphtU2pq1iCo4kFkx1fujf7mRkSBws4A2tUkbg=
 github.com/dal-go/dalgo-end2end-tests v0.0.79/go.mod h1:C58QIXhvsLNCzQImdSa8JjsjJUcYc8U0TeDTSxLkxxg=
+github.com/dal-go/dalgo-end2end-tests v0.0.80 h1:uXxJhr/JV8B2Y92TQDaC1a10c1paajYEi3b+n8ez1/I=
+github.com/dal-go/dalgo-end2end-tests v0.0.80/go.mod h1:C58QIXhvsLNCzQImdSa8JjsjJUcYc8U0TeDTSxLkxxg=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/envoyproxy/go-control-plane v0.14.0 h1:hbG2kr4RuFj222B6+7T83thSPqLjwBIfQawTkC++2HA=
