@@ -7,7 +7,7 @@ toolchain go1.26.1
 require (
 	cloud.google.com/go/datastore v1.22.0
 	github.com/dal-go/dalgo v0.41.10
-	github.com/dal-go/dalgo-end2end-tests v0.0.80
+	github.com/dal-go/dalgo-end2end-tests v0.0.81
 	github.com/stretchr/testify v1.11.1
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.273.0
@@ -34,7 +34,7 @@ require (
 	github.com/mschoch/smat v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/strongo/random v0.0.1 // indirect
-	github.com/strongo/validation v0.0.7 // indirect
+	github.com/strongo/validation v0.0.8 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.65.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.65.0 // indirect
