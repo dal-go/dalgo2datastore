@@ -10,7 +10,7 @@ require (
 	github.com/dal-go/dalgo-end2end-tests v0.0.81
 	github.com/stretchr/testify v1.11.1
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.273.1
+	google.golang.org/api v0.274.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
