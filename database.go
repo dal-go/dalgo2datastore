@@ -14,6 +14,9 @@ import (
 var _ dal.DB = (*database)(nil)
 
 type database struct {
+	// ConcurrencyAvailable signals that Datastore is a server-side multi-tenant
+	// cloud store that supports concurrent connections from a single client.
+	dal.ConcurrencyAvailable
 	ProjectID string
 	client    *datastore.Client
 }
