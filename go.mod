@@ -7,14 +7,12 @@ toolchain go1.26.3
 require (
 	cloud.google.com/go/datastore v1.24.0
 	github.com/dal-go/dalgo v0.44.2
-	github.com/dal-go/dalgo-end2end-tests v0.0.92
 	github.com/stretchr/testify v1.11.1
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.282.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
-//replace github.com/dal-go/dalgo-end2end-tests => ../dalgo-end2end-tests
 
 require (
 	cloud.google.com/go v0.123.0 // indirect
