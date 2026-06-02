@@ -9,7 +9,7 @@ require (
 	github.com/dal-go/dalgo v0.44.2
 	github.com/stretchr/testify v1.11.1
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.282.0
+	google.golang.org/api v0.283.0
 )
 
 //replace github.com/dal-go/dalgo => ../dalgo
