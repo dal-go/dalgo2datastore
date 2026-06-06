@@ -26,7 +26,7 @@ func (db database) ExecuteQueryToRecordsReader(ctx context.Context, query dal.Qu
 }
 
 func (db database) ExecuteQueryToRecordsetReader(_ context.Context, _ dal.Query, _ ...recordset.Option) (dal.RecordsetReader, error) {
-	return nil, dal.ErrNotImplementedYet
+	return nil, dal.ErrNotSupported
 }
 
 func (db database) ID() string {

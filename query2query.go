@@ -10,6 +10,15 @@ import (
 func dalQuery2datastoreQuery(query dal.Query) (q *datastore.Query, err error) {
 	switch query := query.(type) {
 	case dal.StructuredQuery:
+		if len(query.Columns()) > 0 {
+			return nil, fmt.Errorf("%w: column projection is not implemented for datastore queries", dal.ErrNotSupported)
+		}
+		if len(query.GroupBy()) > 0 {
+			return nil, fmt.Errorf("%w: GROUP BY is not implemented for datastore queries", dal.ErrNotSupported)
+		}
+		if query.Having() != nil {
+			return nil, fmt.Errorf("%w: HAVING is not implemented for datastore queries", dal.ErrNotSupported)
+		}
 		q = datastore.NewQuery(query.From().Base().Name())
 		if limit := query.Limit(); limit > 0 {
 			q = q.Limit(limit)
