@@ -54,6 +54,18 @@ func applyOrderBy(orderBy []dal.OrderExpression, q *datastore.Query) (*datastore
 	return q, nil
 }
 
+// dalOperator2datastore maps dalgo comparison operators to the operator strings
+// accepted by the Datastore Go client. Notably dal.Equal is "==" while Datastore
+// expects "=", and dal.In is "In" while Datastore expects "in".
+var dalOperator2datastore = map[dal.Operator]string{
+	dal.Equal:          "=",
+	dal.GreaterThen:    ">",
+	dal.GreaterOrEqual: ">=",
+	dal.LessThen:       "<",
+	dal.LessOrEqual:    "<=",
+	dal.In:             "in",
+}
+
 func applyWhere(where dal.Condition, q *datastore.Query) (*datastore.Query, error) {
 	if where == nil {
 		return q, nil
@@ -63,19 +75,37 @@ func applyWhere(where dal.Condition, q *datastore.Query) (*datastore.Query, erro
 		case dal.FieldRef:
 			switch right := comparison.Right.(type) {
 			case dal.Constant:
-				var operator string
-				switch comparison.Operator {
-				case dal.Equal:
-					operator = "="
-				default:
-					operator = string(comparison.Operator)
+				operator, ok := dalOperator2datastore[comparison.Operator]
+				if !ok {
+					return q, fmt.Errorf("%w: operator %q is not supported by datastore queries", dal.ErrNotSupported, comparison.Operator)
 				}
 				q = q.FilterField(left.Name(), operator, right.Value)
+			case dal.Array:
+				// Field IN array (e.g. dal.WhereArrayContainsAny): Datastore's "in" filter
+				// matches entities where the property equals any of the given values; for
+				// array properties equality means "contains".
+				if comparison.Operator != dal.In {
+					return q, fmt.Errorf("%w: only IN operator is supported for an array as right operand, got: %v", dal.ErrNotSupported, comparison.Operator)
+				}
+				q = q.FilterField(left.Name(), "in", right.Value)
 			default:
-				return q, fmt.Errorf("only FieldRef are supported as left operand, got: %T", right)
+				return q, fmt.Errorf("only constants and arrays are supported as right operand of a field, got: %T", right)
+			}
+		case dal.Constant:
+			switch right := comparison.Right.(type) {
+			case dal.FieldRef:
+				// Constant IN field (dal.WhereInArrayField / dal.WhereArrayContains):
+				// in Datastore an equality filter on an array property matches entities
+				// whose array contains the value.
+				if comparison.Operator != dal.In {
+					return q, fmt.Errorf("%w: only IN operator is supported for a constant as left operand, got: %v", dal.ErrNotSupported, comparison.Operator)
+				}
+				q = q.FilterField(right.Name(), "=", left.Value)
+			default:
+				return q, fmt.Errorf("only FieldRef is supported as right operand of a constant, got: %T", right)
 			}
 		default:
-			return q, fmt.Errorf("only FieldRef are supported as left operand, got: %T", left)
+			return q, fmt.Errorf("only FieldRef or Constant are supported as left operand, got: %T", left)
 		}
 		return q, nil
 	}

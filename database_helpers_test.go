@@ -45,8 +45,7 @@ func TestGetDatastoreKey_Various(t *testing.T) {
 	rec := dal.NewRecordWithIncompleteKey("K1", reflect.String, &struct{}{})
 	dsKey, isPartial, err := getDatastoreKey(rec.Key())
 	assert.NoError(t, err)
-	// function currently returns an incomplete datastore key, but isPartial flag is not set
-	assert.False(t, isPartial)
+	assert.True(t, isPartial)
 	assert.True(t, dsKey.Incomplete())
 	assert.Equal(t, "K1", dsKey.Kind)
 
@@ -64,6 +63,14 @@ func TestGetDatastoreKey_Various(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, isPartial)
 	assert.Equal(t, int64(123), dsKey.ID)
+	assert.Equal(t, "", dsKey.Name)
+
+	// Int64 ID (e.g. written back into the key by Datastore's native ID allocation)
+	kInt64 := dal.NewKeyWithID("K3", int64(456))
+	dsKey, isPartial, err = getDatastoreKey(kInt64)
+	assert.NoError(t, err)
+	assert.False(t, isPartial)
+	assert.Equal(t, int64(456), dsKey.ID)
 	assert.Equal(t, "", dsKey.Name)
 
 	// Unsupported ID type
