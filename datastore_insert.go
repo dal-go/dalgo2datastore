@@ -12,15 +12,25 @@ import (
 type dsInserter = func(key *datastore.Key, isPartialKey bool, dst any) error
 type dsExister = func(key *datastore.Key) error
 
+// maxIDGenerationAttempts bounds retries when an explicit dal.IDGenerator is supplied
+// and the generated ID is already taken by an existing entity.
+const maxIDGenerationAttempts = 5
+
 func (tx transaction) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) error {
 	var inserter = func(key *datastore.Key, isPartialKey bool, dst any) (err error) {
-		var pendingKey *datastore.PendingKey
-		pendingKey, err = tx.datastoreTx.Put(key, dst)
-		if err != nil {
-			return err
+		if isPartialKey {
+			// The ID of a key put inside a Datastore transaction is not known until
+			// the transaction commits, so allocate the ID upfront to be able to write
+			// it back into the record key before returning.
+			var keys []*datastore.Key
+			if keys, err = tx.db.client.AllocateIDs(c, []*datastore.Key{key}); err != nil {
+				return fmt.Errorf("failed to allocate ID for incomplete key: %w", err)
+			}
+			key = keys[0]
+			updatePartialKey(record.Key(), key)
 		}
-		if isPartialKey && pendingKey != nil {
-			tx.pendingKeys = append(tx.pendingKeys, partialKey{record.Key(), pendingKey})
+		if _, err = tx.datastoreTx.Put(key, dst); err != nil {
+			return err
 		}
 		return nil
 	}
@@ -93,12 +103,19 @@ func insert(ctx context.Context, record dal.Record, insert dsInserter, exists ds
 				}
 			}
 			insertRandom := func(record dal.Record) error {
-				return insert(key, false, record.Data())
+				var k *datastore.Key
+				if k, _, err = getDatastoreKey(record.Key()); err != nil {
+					return err
+				}
+				return insert(k, false, record.Data())
 			}
-			return dal.InsertWithIdGenerator(ctx, record, idGenerator, 5, recordExists, insertRandom)
+			return dal.InsertWithIdGenerator(ctx, record, idGenerator, maxIDGenerationAttempts, recordExists, insertRandom)
 		}
 
-		panic(fmt.Sprintf("database.insert() called for key with incomplete ID: %+v", key))
+		// Both dal.WithAdapterGeneratedID and the default behavior for incomplete keys
+		// use Datastore's native ID allocation; the inserter writes the allocated ID
+		// back into record.Key().ID before returning.
+		return insert(key, true, record.Data())
 	}
 
 	err = insert(key, isPartial, record.Data())

@@ -55,22 +55,20 @@ func (db database) runInTransaction(c context.Context, opts []dal.TransactionOpt
 var _ dal.Transaction = (*transaction)(nil)
 var _ dal.ReadwriteTransaction = (*transaction)(nil)
 
-type partialKey struct {
-	dalgo   *dal.Key
-	pending *datastore.PendingKey
-}
-
 type transaction struct {
 	db             database
 	dalgoTxOptions dal.TransactionOptions
 	datastoreTx    *datastore.Transaction
-	pendingKeys    []partialKey
 	dal.QueryExecutor
 }
 
-func (tx transaction) InsertMulti(_ context.Context, _ []dal.Record, _ ...dal.InsertOption) error {
-	//TODO implement me
-	panic("implement me")
+func (tx transaction) InsertMulti(ctx context.Context, records []dal.Record, opts ...dal.InsertOption) error {
+	for i, record := range records {
+		if err := tx.Insert(ctx, record, opts...); err != nil {
+			return fmt.Errorf("failed to insert record %d out of %d: %w", i+1, len(records), err)
+		}
+	}
+	return nil
 }
 
 // ID returns empty string as datastore doesn't support long-lasting transactions
@@ -103,9 +101,7 @@ func (tx transaction) Set(ctx context.Context, record dal.Record) error {
 	if key, isIncomplete, err := getDatastoreKey(record.Key()); err != nil {
 		return err
 	} else if isIncomplete {
-		log.Errorf(ctx, "database.Update() called for incomplete key, will insert.")
-		panic("not implemented")
-		//return gaeDb.Insert(ctx, record, dal.NewInsertOptions(dal.WithRandomStringID(5)))
+		return fmt.Errorf("transaction.Set() requires a complete key, got: %v", record.Key())
 	} else if _, err = Put(ctx, tx.db.client, key, data); err != nil {
 		return fmt.Errorf("failed to update %s: %w", key2str(key), err)
 	}
