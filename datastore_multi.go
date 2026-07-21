@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/record"
 )
 
-func datastoreKeysAndValues(records []dal.Record) (keys []*datastore.Key, values []any, err error) {
+func datastoreKeysAndValues(records []record.Record) (keys []*datastore.Key, values []any, err error) {
 	count := len(records)
 	keys = make([]*datastore.Key, count)
 	values = make([]any, count)
@@ -34,19 +35,19 @@ const (
 	operationSet operation = "set"
 )
 
-func handleMultiError(err datastore.MultiError, records []dal.Record, op operation) datastore.MultiError {
+func handleMultiError(err datastore.MultiError, records []record.Record, op operation) datastore.MultiError {
 	if len(err) == 0 {
 		return nil
 	}
 	if len(err) == len(records) {
 		for i, e := range err {
-			record := records[i]
+			rec := records[i]
 			if errors.Is(e, datastore.ErrNoSuchEntity) {
-				record.SetError(fmt.Errorf("%w: %v", dal.ErrRecordNotFound, e))
+				rec.SetError(fmt.Errorf("%w: %v", record.ErrRecordNotFound, e))
 			} else if e != nil {
-				record.SetError(e)
+				rec.SetError(e)
 			} else {
-				record.SetError(dal.ErrNoError)
+				rec.SetError(record.ErrNoError)
 			}
 		}
 		if op == operationGet {

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/record"
 	"github.com/strongo/log"
 )
 
@@ -16,7 +17,7 @@ type dsExister = func(key *datastore.Key) error
 // and the generated ID is already taken by an existing entity.
 const maxIDGenerationAttempts = 5
 
-func (tx transaction) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) error {
+func (tx transaction) Insert(c context.Context, record record.Record, opts ...dal.InsertOption) error {
 	var inserter = func(key *datastore.Key, isPartialKey bool, dst any) (err error) {
 		if isPartialKey {
 			// The ID of a key put inside a Datastore transaction is not known until
@@ -40,7 +41,7 @@ func (tx transaction) Insert(c context.Context, record dal.Record, opts ...dal.I
 	return insert(c, record, inserter, exister, dal.NewInsertOptions(opts...))
 }
 
-func (db database) Insert(c context.Context, record dal.Record, opts ...dal.InsertOption) error {
+func (db database) Insert(c context.Context, record record.Record, opts ...dal.InsertOption) error {
 	if record == nil {
 		panic("record == nil")
 	}
@@ -65,18 +66,18 @@ func (db database) Insert(c context.Context, record dal.Record, opts ...dal.Inse
 	return insert(c, record, inserter, exister, options)
 }
 
-func updatePartialKey(key *dal.Key, dsKey *datastore.Key) {
+func updatePartialKey(key *record.Key, dsKey *datastore.Key) {
 	key.ID = dsKey.ID
 }
 
-func insert(ctx context.Context, record dal.Record, insert dsInserter, exists dsExister, options dal.InsertOptions) error {
-	if record == nil {
+func insert(ctx context.Context, rec record.Record, insert dsInserter, exists dsExister, options dal.InsertOptions) error {
+	if rec == nil {
 		panic("record == nil")
 	}
-	recordKey := record.Key()
+	recordKey := rec.Key()
 	kind := recordKey.Collection()
-	record.SetError(nil)
-	entity := record.Data()
+	rec.SetError(nil)
+	entity := rec.Data()
 	if entity == nil {
 		panic("record == nil")
 	}
@@ -90,34 +91,34 @@ func insert(ctx context.Context, record dal.Record, insert dsInserter, exists ds
 	}
 	if isPartial {
 		if idGenerator := options.IDGenerator(); idGenerator != nil {
-			recordExists := func(key *dal.Key) error {
+			recordExists := func(key *record.Key) error {
 				var k *datastore.Key
 				k, _, err = getDatastoreKey(key)
 				if err != nil {
 					return err
 				}
 				if err = exists(k); errors.Is(err, datastore.ErrNoSuchEntity) {
-					return dal.ErrRecordNotFound
+					return record.ErrRecordNotFound
 				} else {
 					return err
 				}
 			}
-			insertRandom := func(record dal.Record) error {
+			insertRandom := func(record record.Record) error {
 				var k *datastore.Key
 				if k, _, err = getDatastoreKey(record.Key()); err != nil {
 					return err
 				}
 				return insert(k, false, record.Data())
 			}
-			return dal.InsertWithIdGenerator(ctx, record, idGenerator, maxIDGenerationAttempts, recordExists, insertRandom)
+			return dal.InsertWithIdGenerator(ctx, rec, idGenerator, maxIDGenerationAttempts, recordExists, insertRandom)
 		}
 
 		// Both dal.WithAdapterGeneratedID and the default behavior for incomplete keys
 		// use Datastore's native ID allocation; the inserter writes the allocated ID
 		// back into record.Key().ID before returning.
-		return insert(key, true, record.Data())
+		return insert(key, true, rec.Data())
 	}
 
-	err = insert(key, isPartial, record.Data())
+	err = insert(key, isPartial, rec.Data())
 	return err
 }

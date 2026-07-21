@@ -3,7 +3,7 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
-	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/record"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -28,13 +28,13 @@ func TestDatabase_AdapterAndSchema(t *testing.T) {
 
 func TestSetRecordID_StringAndInt(t *testing.T) {
 	// String ID
-	recStr := dal.NewRecordWithIncompleteKey("KindA", reflect.String, &struct{}{})
+	recStr := record.NewRecordWithIncompleteKey("KindA", reflect.String, &struct{}{})
 	dsKeyStr := datastore.NameKey("KindA", "abc123", nil)
 	setRecordID(dsKeyStr, recStr)
 	assert.Equal(t, "abc123", recStr.Key().ID)
 
 	// Int ID
-	recInt := dal.NewRecordWithIncompleteKey("KindB", reflect.Int64, &struct{}{})
+	recInt := record.NewRecordWithIncompleteKey("KindB", reflect.Int64, &struct{}{})
 	dsKeyInt := datastore.IDKey("KindB", 789, nil)
 	setRecordID(dsKeyInt, recInt)
 	assert.Equal(t, int64(789), recInt.Key().ID)
@@ -42,7 +42,7 @@ func TestSetRecordID_StringAndInt(t *testing.T) {
 
 func TestGetDatastoreKey_Various(t *testing.T) {
 	// Incomplete key (nil ID)
-	rec := dal.NewRecordWithIncompleteKey("K1", reflect.String, &struct{}{})
+	rec := record.NewRecordWithIncompleteKey("K1", reflect.String, &struct{}{})
 	dsKey, isPartial, err := getDatastoreKey(rec.Key())
 	assert.NoError(t, err)
 	assert.True(t, isPartial)
@@ -50,7 +50,7 @@ func TestGetDatastoreKey_Various(t *testing.T) {
 	assert.Equal(t, "K1", dsKey.Kind)
 
 	// String ID
-	kStr := dal.NewKeyWithID("K2", "s-1")
+	kStr := record.NewKeyWithID("K2", "s-1")
 	dsKey, isPartial, err = getDatastoreKey(kStr)
 	assert.NoError(t, err)
 	assert.False(t, isPartial)
@@ -58,7 +58,7 @@ func TestGetDatastoreKey_Various(t *testing.T) {
 	assert.Equal(t, int64(0), dsKey.ID)
 
 	// Int ID
-	kInt := dal.NewKeyWithID("K3", 123)
+	kInt := record.NewKeyWithID("K3", 123)
 	dsKey, isPartial, err = getDatastoreKey(kInt)
 	assert.NoError(t, err)
 	assert.False(t, isPartial)
@@ -66,7 +66,7 @@ func TestGetDatastoreKey_Various(t *testing.T) {
 	assert.Equal(t, "", dsKey.Name)
 
 	// Int64 ID (e.g. written back into the key by Datastore's native ID allocation)
-	kInt64 := dal.NewKeyWithID("K3", int64(456))
+	kInt64 := record.NewKeyWithID("K3", int64(456))
 	dsKey, isPartial, err = getDatastoreKey(kInt64)
 	assert.NoError(t, err)
 	assert.False(t, isPartial)
@@ -74,7 +74,7 @@ func TestGetDatastoreKey_Various(t *testing.T) {
 	assert.Equal(t, "", dsKey.Name)
 
 	// Unsupported ID type
-	kBad := dal.NewKeyWithID("K4", 3.14)
+	kBad := record.NewKeyWithID("K4", 3.14)
 	_, _, err = getDatastoreKey(kBad)
 	assert.Error(t, err)
 }

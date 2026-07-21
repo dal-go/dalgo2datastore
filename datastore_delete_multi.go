@@ -4,23 +4,23 @@ import (
 	"cloud.google.com/go/datastore"
 	"context"
 	"errors"
-	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/record"
 	"strconv"
 )
 
 type multiDeleter = func(keys []*datastore.Key) error
 
-func (tx transaction) DeleteMulti(ctx context.Context, keys []*dal.Key) error {
+func (tx transaction) DeleteMulti(ctx context.Context, keys []*record.Key) error {
 	return deleteMulti(keys, tx.datastoreTx.DeleteMulti)
 }
 
-func (db database) DeleteMulti(c context.Context, recordKeys []*dal.Key) (err error) {
+func (db database) DeleteMulti(c context.Context, recordKeys []*record.Key) (err error) {
 	return deleteMulti(recordKeys, func(keys []*datastore.Key) error {
 		return db.client.DeleteMulti(c, keys)
 	})
 }
 
-func deleteMulti(dalgoKeys []*dal.Key, deleteMulti multiDeleter) (err error) {
+func deleteMulti(dalgoKeys []*record.Key, deleteMulti multiDeleter) (err error) {
 	keys := make([]*datastore.Key, len(dalgoKeys))
 	for i, k := range dalgoKeys {
 		var isIncomplete bool
