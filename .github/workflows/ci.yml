@@ -34,6 +34,6 @@ jobs:
 
       - run: gcloud version
 
-      - uses: strongo/cicd@v1.10.4
+      - uses: strongo/cicd@v1.10.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
