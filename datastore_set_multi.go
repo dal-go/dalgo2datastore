@@ -3,12 +3,12 @@ package dalgo2datastore
 import (
 	"cloud.google.com/go/datastore"
 	"context"
-	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/record"
 )
 
 type multiSetter = func(keys []*datastore.Key, dst []any) error
 
-func (tx transaction) SetMulti(ctx context.Context, records []dal.Record) error {
+func (tx transaction) SetMulti(ctx context.Context, records []record.Record) error {
 	return setMulti(records, func(keys []*datastore.Key, dst []any) error {
 		_, err := tx.datastoreTx.PutMulti(keys, dst)
 		if err != nil {
@@ -18,7 +18,7 @@ func (tx transaction) SetMulti(ctx context.Context, records []dal.Record) error 
 	})
 }
 
-func (db database) SetMulti(c context.Context, records []dal.Record) error {
+func (db database) SetMulti(c context.Context, records []record.Record) error {
 	return setMulti(records, func(keys []*datastore.Key, dst []any) error {
 		_, err := db.client.PutMulti(c, keys, dst)
 		if err != nil {
@@ -28,7 +28,7 @@ func (db database) SetMulti(c context.Context, records []dal.Record) error {
 	})
 }
 
-func setMulti(records []dal.Record, setMulti multiSetter) (err error) {
+func setMulti(records []record.Record, setMulti multiSetter) (err error) {
 	var keys []*datastore.Key
 	var values []any
 	if keys, values, err = datastoreKeysAndValues(records); err != nil {

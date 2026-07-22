@@ -5,49 +5,50 @@ import (
 	"context"
 	"errors"
 	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/record"
 	"strconv"
 )
 
 type getter = func(key *datastore.Key, dst any) error
 
-func (tx transaction) Get(_ context.Context, record dal.Record) error {
+func (tx transaction) Get(_ context.Context, record record.Record) error {
 	return getRecord(record, tx.datastoreTx.Get)
 }
 
-func (tx transaction) Exists(_ context.Context, key *dal.Key) (exists bool, err error) {
+func (tx transaction) Exists(_ context.Context, key *record.Key) (exists bool, err error) {
 	err = existsByKey(key, func(datastoreKey *datastore.Key, dst any) error {
 		return tx.datastoreTx.Get(datastoreKey, dst)
 	})
-	if dal.IsNotFound(err) {
+	if record.IsNotFound(err) {
 		return false, nil
 	}
 	return err == nil, err
 }
 
-func (db database) Get(ctx context.Context, record dal.Record) (err error) {
+func (db database) Get(ctx context.Context, record record.Record) (err error) {
 	return getRecord(record, func(datastoreKey *datastore.Key, dst any) error {
 		return db.client.Get(ctx, datastoreKey, dst)
 	})
 }
 
-func (db database) Exists(ctx context.Context, key *dal.Key) (exists bool, err error) {
+func (db database) Exists(ctx context.Context, key *record.Key) (exists bool, err error) {
 	err = existsByKey(key, func(key *datastore.Key, dst any) error {
 		return db.client.Get(ctx, key, dst)
 	})
-	if dal.IsNotFound(err) {
+	if record.IsNotFound(err) {
 		return false, nil
 	}
 	return err == nil, err
 }
 
-func handleGetByKeyError(key *dal.Key, err error) error {
+func handleGetByKeyError(key *record.Key, err error) error {
 	if errors.Is(err, datastore.ErrNoSuchEntity) {
 		err = dal.NewErrNotFoundByKey(key, err)
 	}
 	return err
 }
 
-func existsByKey(key *dal.Key, get getter) error {
+func existsByKey(key *record.Key, get getter) error {
 	if err := getByKey(key, get, &struct{}{}); err != nil {
 		var errFieldMismatch *datastore.ErrFieldMismatch
 		if errors.As(err, &errFieldMismatch) {
@@ -58,7 +59,7 @@ func existsByKey(key *dal.Key, get getter) error {
 	return nil
 }
 
-func getByKey(key *dal.Key, get getter, dst any) error {
+func getByKey(key *record.Key, get getter, dst any) error {
 	datastoreKey, isIncomplete, err := getDatastoreKey(key)
 	if err != nil {
 		return err
@@ -72,7 +73,7 @@ func getByKey(key *dal.Key, get getter, dst any) error {
 	return err
 }
 
-func getRecord(record dal.Record, get getter) (err error) {
+func getRecord(record record.Record, get getter) (err error) {
 	recordKey := record.Key()
 	record.SetError(nil) // This is needed to call record.Data()
 	data := record.Data()

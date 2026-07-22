@@ -6,13 +6,13 @@ toolchain go1.26.5
 
 require (
 	cloud.google.com/go/datastore v1.25.0
-	github.com/dal-go/dalgo v0.63.0
+	github.com/dal-go/dalgo v0.63.1
+	github.com/dal-go/record v0.1.0
 	github.com/stretchr/testify v1.11.1
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.289.0
 )
 
-//replace github.com/dal-go/dalgo => ../dalgo
 
 require (
 	cloud.google.com/go v0.123.0 // indirect

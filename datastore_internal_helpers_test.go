@@ -5,13 +5,14 @@ import (
 	"context"
 	"errors"
 	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/record"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
 
 func Test_existsByKey_Behaviors(t *testing.T) {
-	key := dal.NewKeyWithID("K", "1")
+	key := record.NewKeyWithID("K", "1")
 
 	// 1) Getter returns ErrFieldMismatch -> existsByKey returns nil
 	{
@@ -40,20 +41,20 @@ func Test_existsByKey_Behaviors(t *testing.T) {
 
 func Test_getByKey_WrapsNoSuchEntityAndCallsGetter(t *testing.T) {
 	called := 0
-	key := dal.NewKeyWithID("K", 7)
+	key := record.NewKeyWithID("K", 7)
 	getter := func(_ *datastore.Key, _ any) error {
 		called++
 		return datastore.ErrNoSuchEntity
 	}
 	var dst struct{}
 	err := getByKey(key, getter, &dst)
-	assert.True(t, dal.IsNotFound(err))
+	assert.True(t, record.IsNotFound(err))
 	assert.Equal(t, 1, called)
 }
 
 func Test_getByKey_IncompleteKey_Rejected(t *testing.T) {
 	called := 0
-	rec := dal.NewRecordWithIncompleteKey("KindZ", reflect.String, &struct{}{})
+	rec := record.NewRecordWithIncompleteKey("KindZ", reflect.String, &struct{}{})
 	getter := func(_ *datastore.Key, _ any) error {
 		called++
 		return nil
@@ -65,7 +66,7 @@ func Test_getByKey_IncompleteKey_Rejected(t *testing.T) {
 }
 
 func Test_insert_IncompleteKeyNoGenerator_CallsInserter(t *testing.T) {
-	rec := dal.NewRecordWithIncompleteKey("KindA", reflect.String, &struct{}{})
+	rec := record.NewRecordWithIncompleteKey("KindA", reflect.String, &struct{}{})
 	called := 0
 	ins := func(dsKey *datastore.Key, isPartial bool, _ any) error {
 		called++
@@ -80,7 +81,7 @@ func Test_insert_IncompleteKeyNoGenerator_CallsInserter(t *testing.T) {
 }
 
 func Test_insert_IncompleteKeyWithAdapterGeneratedID_CallsInserter(t *testing.T) {
-	rec := dal.NewRecordWithIncompleteKey("KindB", reflect.Int64, &struct{}{})
+	rec := record.NewRecordWithIncompleteKey("KindB", reflect.Int64, &struct{}{})
 	called := 0
 	ins := func(dsKey *datastore.Key, isPartial bool, _ any) error {
 		called++
@@ -96,7 +97,7 @@ func Test_insert_IncompleteKeyWithAdapterGeneratedID_CallsInserter(t *testing.T)
 
 func Test_insert_IncompleteKeyWithIDGenerator(t *testing.T) {
 	t.Run("inserts_with_generated_id", func(t *testing.T) {
-		rec := dal.NewRecordWithIncompleteKey("KindC", reflect.String, &struct{}{})
+		rec := record.NewRecordWithIncompleteKey("KindC", reflect.String, &struct{}{})
 		called := 0
 		ins := func(dsKey *datastore.Key, isPartial bool, _ any) error {
 			called++
@@ -112,7 +113,7 @@ func Test_insert_IncompleteKeyWithIDGenerator(t *testing.T) {
 		assert.NotEmpty(t, rec.Key().ID)
 	})
 	t.Run("fails_if_all_generated_ids_taken", func(t *testing.T) {
-		rec := dal.NewRecordWithIncompleteKey("KindC", reflect.String, &struct{}{})
+		rec := record.NewRecordWithIncompleteKey("KindC", reflect.String, &struct{}{})
 		ins := func(_ *datastore.Key, _ bool, _ any) error {
 			t.Error("inserter should not be called when all generated IDs are taken")
 			return nil
@@ -127,7 +128,7 @@ func Test_insert_IncompleteKeyWithIDGenerator(t *testing.T) {
 		assert.Greater(t, existsCalled, 1)
 	})
 	t.Run("explicit_generator_wins_over_adapter_generated_id", func(t *testing.T) {
-		rec := dal.NewRecordWithIncompleteKey("KindC", reflect.String, &struct{}{})
+		rec := record.NewRecordWithIncompleteKey("KindC", reflect.String, &struct{}{})
 		called := 0
 		ins := func(dsKey *datastore.Key, isPartial bool, _ any) error {
 			called++
@@ -144,7 +145,7 @@ func Test_insert_IncompleteKeyWithIDGenerator(t *testing.T) {
 }
 
 func Test_updatePartialKey(t *testing.T) {
-	rec := dal.NewRecordWithIncompleteKey("K", reflect.Int64, &struct{}{})
+	rec := record.NewRecordWithIncompleteKey("K", reflect.Int64, &struct{}{})
 	k := rec.Key()
 	dsKey := datastore.IDKey("K", 123, nil)
 	updatePartialKey(k, dsKey)

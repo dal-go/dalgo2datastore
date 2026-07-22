@@ -6,7 +6,8 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"github.com/dal-go/dalgo/dal"
-	"github.com/dal-go/dalgo/update"
+	"github.com/dal-go/record"
+	"github.com/dal-go/record/update"
 	"github.com/strongo/log"
 )
 
@@ -62,7 +63,7 @@ type transaction struct {
 	dal.QueryExecutor
 }
 
-func (tx transaction) InsertMulti(ctx context.Context, records []dal.Record, opts ...dal.InsertOption) error {
+func (tx transaction) InsertMulti(ctx context.Context, records []record.Record, opts ...dal.InsertOption) error {
 	for i, record := range records {
 		if err := tx.Insert(ctx, record, opts...); err != nil {
 			return fmt.Errorf("failed to insert record %d out of %d: %w", i+1, len(records), err)
@@ -76,15 +77,15 @@ func (tx transaction) ID() string {
 	return ""
 }
 
-func (tx transaction) Update(_ context.Context, _ *dal.Key, _ []update.Update, _ ...dal.Precondition) error {
+func (tx transaction) Update(_ context.Context, _ *record.Key, _ []update.Update, _ ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
-func (tx transaction) UpdateRecord(ctx context.Context, record dal.Record, updates []update.Update, preconditions ...dal.Precondition) error {
+func (tx transaction) UpdateRecord(ctx context.Context, record record.Record, updates []update.Update, preconditions ...dal.Precondition) error {
 	return tx.Update(ctx, record.Key(), updates, preconditions...)
 }
 
-func (tx transaction) UpdateMulti(_ context.Context, _ []*dal.Key, _ []update.Update, _ ...dal.Precondition) error {
+func (tx transaction) UpdateMulti(_ context.Context, _ []*record.Key, _ []update.Update, _ ...dal.Precondition) error {
 	return dal.ErrNotSupported
 }
 
@@ -92,7 +93,7 @@ func (tx transaction) Options() dal.TransactionOptions {
 	return tx.dalgoTxOptions
 }
 
-func (tx transaction) Set(ctx context.Context, record dal.Record) error {
+func (tx transaction) Set(ctx context.Context, record record.Record) error {
 	data := record.Data()
 	log.Debugf(ctx, "data: %+v", data)
 	if data == nil {
@@ -108,7 +109,7 @@ func (tx transaction) Set(ctx context.Context, record dal.Record) error {
 	return nil
 }
 
-func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (err error) { // TODO: Rename to PutMulti?
+func (tx transaction) SetMultiOld(ctx context.Context, records []record.Record) (err error) { // TODO: Rename to PutMulti?
 
 	keys := make([]*datastore.Key, len(records))
 	values := make([]any, len(records))
@@ -154,12 +155,12 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 	return
 }
 
-//func (t transaction) Update(ctx context.Context, key *dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
+//func (t transaction) Update(ctx context.Context, key *record.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
 //	//TODO implement me
 //	panic("implement me")
 //}
 //
-//func (t transaction) SetMulti(c context.Context, keys []*dal.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
+//func (t transaction) SetMulti(c context.Context, keys []*record.Key, updates []dal.Update, preconditions ...dal.Precondition) error {
 //	//TODO implement me
 //	panic("implement me")
 //}
@@ -168,7 +169,7 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 //	panic("implement me")
 //}
 
-//func (t transaction) Insert(ctx context.Context, record dal.Record, opts ...dal.InsertOption) error {
+//func (t transaction) Insert(ctx context.Context, record record.Record, opts ...dal.InsertOption) error {
 //	options := dal.NewInsertOptions(opts...)
 //	idGenerator := options.IDGenerator()
 //	key := record.Key()
@@ -180,12 +181,12 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 //	return t.tx.Create(dr, data)
 //}
 //
-//func (t transaction) Upsert(_ context.Context, record dal.Record) error {
+//func (t transaction) Upsert(_ context.Context, record record.Record) error {
 //	dr := t.dtb.doc(record.Key())
 //	return t.tx.Set(dr, record.Data())
 //}
 //
-//func (t transaction) Get(_ context.Context, record dal.Record) error {
+//func (t transaction) Get(_ context.Context, record record.Record) error {
 //	key := record.Key()
 //	docRef := t.dtb.doc(key)
 //	docSnapshot, err := t.tx.Get(docRef)
@@ -194,17 +195,17 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 //	})
 //}
 //
-//func (t transaction) Set(ctx context.Context, record dal.Record) error {
+//func (t transaction) Set(ctx context.Context, record record.Record) error {
 //	dr := t.dtb.doc(record.Key())
 //	return t.tx.Set(dr, record.Data())
 //}
 //
-//func (t transaction) Delete(ctx context.Context, key *dal.Key) error {
+//func (t transaction) Delete(ctx context.Context, key *record.Key) error {
 //	dr := t.dtb.doc(key)
 //	return t.tx.Delete(dr)
 //}
 //
-//func (t transaction) GetMulti(ctx context.Context, records []dal.Record) error {
+//func (t transaction) GetMulti(ctx context.Context, records []record.Record) error {
 //	dr := make([]*firestore.DocumentRef, len(records))
 //	for i, r := range records {
 //		dr[i] = t.dtb.doc(r.Key())
@@ -224,7 +225,7 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 //	return nil
 //}
 //
-//func (t transaction) SetMulti(ctx context.Context, records []dal.Record) error {
+//func (t transaction) SetMulti(ctx context.Context, records []record.Record) error {
 //	for _, record := range records { // TODO: can we do this in parallel?
 //		doc := t.dtb.doc(record.Key())
 //		_, err := doc.Set(ctx, record.Data())
@@ -236,7 +237,7 @@ func (tx transaction) SetMultiOld(ctx context.Context, records []dal.Record) (er
 //	return nil
 //}
 //
-//func (t transaction) DeleteMulti(_ context.Context, keys []*dal.Key) error {
+//func (t transaction) DeleteMulti(_ context.Context, keys []*record.Key) error {
 //	for _, k := range keys {
 //		dr := t.dtb.doc(k)
 //		if err := t.tx.Delete(dr); err != nil {

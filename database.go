@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/datastore"
 	"github.com/dal-go/dalgo/dal"
 	"github.com/dal-go/dalgo/recordset"
+	"github.com/dal-go/record"
 	"google.golang.org/api/option"
 )
 
@@ -44,7 +45,7 @@ func (db database) Schema() dal.Schema {
 	return nil
 }
 
-func (database) Upsert(_ context.Context, _ dal.Record) error {
+func (database) Upsert(_ context.Context, _ record.Record) error {
 	panic("implement me")
 }
 
@@ -56,12 +57,12 @@ func NewDatabase(ctx context.Context, projectID string) (db dal.DB, err error) {
 	return database, err
 }
 
-//func (db database) exists(c context.Context, recordKey *dal.Key) error {
+//func (db database) exists(c context.Context, recordKey *record.Key) error {
 //	var empty struct{}
 //	return db.Get(c, dal.NewRecordWithData(recordKey, &empty))
 //}
 
-func setRecordID(key *datastore.Key, record dal.Record) {
+func setRecordID(key *datastore.Key, record record.Record) {
 	recordKey := record.Key()
 	if strID := key.Name; strID != "" {
 		recordKey.ID = strID
@@ -76,7 +77,7 @@ func setRecordID(key *datastore.Key, record dal.Record) {
 // ErrEmptyKind indicates record holder returned empty kind
 var ErrEmptyKind = errors.New("record holder returned empty kind")
 
-func getDatastoreKey(dalKey *dal.Key) (datastoreKey *datastore.Key, isPartial bool, err error) {
+func getDatastoreKey(dalKey *record.Key) (datastoreKey *datastore.Key, isPartial bool, err error) {
 	if dalKey == nil {
 		panic(dalKey == nil)
 	}
