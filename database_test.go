@@ -2,8 +2,10 @@ package dalgo2datastore
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/dal-go/dalgo/dal"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewDatabase(t *testing.T) {
@@ -11,11 +13,14 @@ func TestNewDatabase(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewDatabase() failed: %v", err)
 	}
-	switch v := v.(type) {
+	// NewDatabase now returns the sealed dal.DB dal.NewDB produces, so the
+	// concrete database this test wants to inspect is recovered via
+	// dal.BackendOf rather than a direct type switch on v.
+	switch backend := dal.BackendOf(v).(type) {
 	case database: // OK
-		assert.NotNilf(t, v.client, "database.client == nil")
+		assert.NotNilf(t, backend.client, "database.client == nil")
 	default:
-		t.Errorf("unexpected DB type: %T", v)
+		t.Errorf("unexpected Backend type: %T", backend)
 	}
 }
 
