@@ -12,7 +12,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-var _ dal.DB = (*database)(nil)
+var _ dal.Backend = (*database)(nil)
 
 type database struct {
 	// ConcurrencyAvailable signals that Datastore is a server-side multi-tenant
@@ -53,8 +53,10 @@ func (database) Upsert(_ context.Context, _ record.Record) error {
 func NewDatabase(ctx context.Context, projectID string) (db dal.DB, err error) {
 	var database database
 	database.ProjectID = projectID
-	database.client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication())
-	return database, err
+	if database.client, err = datastore.NewClient(ctx, projectID, option.WithoutAuthentication()); err != nil {
+		return nil, err
+	}
+	return dal.NewDB(database), nil
 }
 
 //func (db database) exists(c context.Context, recordKey *record.Key) error {
