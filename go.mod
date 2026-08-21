@@ -2,13 +2,13 @@ module github.com/dal-go/dalgo2datastore
 
 go 1.25.8
 
-toolchain go1.26.6
+toolchain go1.27.0
 
 require (
 	cloud.google.com/go/datastore v1.26.0
-	github.com/dal-go/dalgo v0.64.7
+	github.com/dal-go/dalgo v0.64.8
 	github.com/dal-go/record v0.1.2
-	github.com/stretchr/testify v1.12.0
+	github.com/stretchr/testify v1.12.1
 	github.com/strongo/log v0.3.0
 	google.golang.org/api v0.293.0
 )
@@ -38,6 +38,7 @@ require (
 	go.opentelemetry.io/otel v1.44.0 // indirect
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
