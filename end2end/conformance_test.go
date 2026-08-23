@@ -12,6 +12,7 @@ import (
 	"github.com/dal-go/dalgo/dal"
 	"github.com/dal-go/dalgo/dalgotest"
 	"github.com/dal-go/dalgo2datastore"
+	"github.com/dal-go/record"
 )
 
 // TestConformance runs the shared dalgotest suite against a live Datastore
@@ -92,4 +93,57 @@ func runConformanceAgainstEmulator(t *testing.T) {
 	dalgotest.RunConformance(t, func(t *testing.T) (dal.DB, func()) {
 		return db, nil
 	})
+
+	t.Run("InsertMulti over an existing key fails the whole batch atomically", func(t *testing.T) {
+		assertInsertMultiDuplicateKeyIsAtomic(t, db)
+	})
+}
+
+// insertMultiDuplicateKeyEntity is a minimal payload for
+// assertInsertMultiDuplicateKeyIsAtomic; its only requirement is being a
+// struct pointer datastore.Put/Mutate can (de)serialize.
+type insertMultiDuplicateKeyEntity struct {
+	Name string
+}
+
+// assertInsertMultiDuplicateKeyIsAtomic exercises the case dalgotest's shared
+// conformance suite does not: dalgotest.RunConformance only checks a
+// single-record Insert over an existing key (see rejectsDuplicateInsert in
+// dalgotest/conformance.go). InsertMulti buffers each record as its own
+// Insert mutation on the SAME Datastore transaction (see
+// transaction.InsertMulti), so Datastore commits or rejects the whole batch
+// as one atomic unit: a duplicate key on one record must fail every record in
+// that InsertMulti call, including ones with no conflict of their own — not
+// just the colliding record.
+func assertInsertMultiDuplicateKeyIsAtomic(t *testing.T, db dal.DB) {
+	ctx := context.Background()
+	const collection = "dalgo2datastore_insertmulti_duplicate_test"
+	const existingID = "existing"
+	const newID = "new-alongside-duplicate"
+
+	seedErr := db.RunReadwriteTransaction(ctx, func(ctx context.Context, tx dal.ReadwriteTransaction) error {
+		return tx.Insert(ctx, record.NewRecordWithData(
+			record.NewKeyWithID(collection, existingID), &insertMultiDuplicateKeyEntity{Name: existingID}))
+	})
+	if seedErr != nil {
+		t.Fatalf("failed to seed the record to InsertMulti over: %v", seedErr)
+	}
+
+	insertErr := db.RunReadwriteTransaction(ctx, func(ctx context.Context, tx dal.ReadwriteTransaction) error {
+		return tx.InsertMulti(ctx, []record.Record{
+			record.NewRecordWithData(record.NewKeyWithID(collection, newID), &insertMultiDuplicateKeyEntity{Name: newID}),
+			record.NewRecordWithData(record.NewKeyWithID(collection, existingID), &insertMultiDuplicateKeyEntity{Name: "duplicate"}),
+		})
+	})
+	if !record.IsAlreadyExists(insertErr) {
+		t.Fatalf("InsertMulti over an existing key returned %v, want an error satisfying record.IsAlreadyExists", insertErr)
+	}
+
+	getErr := db.RunReadonlyTransaction(ctx, func(ctx context.Context, tx dal.ReadTransaction) error {
+		var dst insertMultiDuplicateKeyEntity
+		return tx.Get(ctx, record.NewRecordWithData(record.NewKeyWithID(collection, newID), &dst))
+	})
+	if !record.IsNotFound(getErr) {
+		t.Fatalf("the non-conflicting record in a failed InsertMulti batch was persisted anyway (Get returned %v), want record.IsNotFound", getErr)
+	}
 }

@@ -41,7 +41,7 @@ func (db database) runInTransaction(c context.Context, opts []dal.TransactionOpt
 	if tx.dalgoTxOptions.IsCrossGroup() {
 		dsTxOptions = append(dsTxOptions, datastore.MaxAttempts(tx.dalgoTxOptions.Attempts()))
 	}
-	return db.client.RunInTransaction(c, func(datastoreTx *datastore.Transaction) error {
+	cmt, err = db.client.RunInTransaction(c, func(datastoreTx *datastore.Transaction) error {
 		tx.datastoreTx = datastoreTx
 		if err := f(tx); err != nil {
 			return err
@@ -51,6 +51,12 @@ func (db database) runInTransaction(c context.Context, opts []dal.TransactionOpt
 		//}
 		return nil
 	}, dsTxOptions...)
+	// tx.Insert/tx.InsertMulti buffer their NewInsert mutations locally (see
+	// datastore_insert.go); Datastore only performs the write, and can only
+	// reject a duplicate key, when the transaction commits. So a duplicate-key
+	// AlreadyExists status surfaces here, from RunInTransaction's own return,
+	// rather than from the Insert call that queued the failing mutation.
+	return cmt, wrapIfAlreadyExists(err)
 }
 
 var _ dal.Transaction = (*transaction)(nil)
