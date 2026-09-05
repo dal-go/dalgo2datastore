@@ -2,15 +2,15 @@ module github.com/dal-go/dalgo2datastore
 
 go 1.26.0
 
-toolchain go1.27.0
+toolchain go1.27.1
 
 require (
 	cloud.google.com/go/datastore v1.26.0
-	github.com/dal-go/dalgo v0.74.2
+	github.com/dal-go/dalgo v0.79.3
 	github.com/dal-go/record v0.1.3
 	github.com/stretchr/testify v1.12.1
 	github.com/strongo/log v0.3.0
-	google.golang.org/api v0.295.0
+	google.golang.org/api v0.297.0
 	google.golang.org/grpc v1.83.2
 )
 
@@ -49,4 +49,5 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20260715232425-e75dac1f907d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260819154853-08b0e4226688 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
