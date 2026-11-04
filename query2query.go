@@ -66,6 +66,21 @@ var dalOperator2datastore = map[dal.Operator]string{
 	dal.In:             "in",
 }
 
+// applyIsNull translates a dal.IsNullCondition. Datastore never matches entities
+// that lack the property, so only IS NOT NULL has an exact native form (`field != null`,
+// which excludes both absent and null values). IS NULL is rejected because a native
+// `field = null` would miss entities where the property is absent.
+func applyIsNull(cond dal.IsNullCondition, q *datastore.Query) (*datastore.Query, error) {
+	field, ok := cond.Operand().(dal.FieldRef)
+	if !ok {
+		return q, fmt.Errorf("%w: IS [NOT] NULL is supported by Datastore only on a field, got: %T", dal.ErrNotSupported, cond.Operand())
+	}
+	if !cond.Negated() {
+		return q, fmt.Errorf("%w: IS NULL on field %q cannot be expressed exactly in Datastore: a native `= null` filter would miss entities where the property is absent; use IS NOT NULL", dal.ErrNotSupported, field.Name())
+	}
+	return q.FilterField(field.Name(), "!=", nil), nil
+}
+
 func applyWhere(where dal.Condition, q *datastore.Query) (*datastore.Query, error) {
 	if where == nil {
 		return q, nil
@@ -122,6 +137,11 @@ func applyWhere(where dal.Condition, q *datastore.Query) (*datastore.Query, erro
 				if q, err = applyComparison(c); err != nil {
 					return q, err
 				}
+			case dal.IsNullCondition:
+				var err error
+				if q, err = applyIsNull(c, q); err != nil {
+					return q, err
+				}
 			default:
 				return q, fmt.Errorf("only comparisons are supported in group condition, got: %T", c)
 			}
@@ -129,6 +149,8 @@ func applyWhere(where dal.Condition, q *datastore.Query) (*datastore.Query, erro
 		return q, nil
 	case dal.Comparison:
 		return applyComparison(cond)
+	case dal.IsNullCondition:
+		return applyIsNull(cond, q)
 	default:
 		return q, fmt.Errorf("only comparison or group conditions are supported at root level of where clause, got: %T", cond)
 	}
