@@ -34,8 +34,9 @@ func TestConformance(t *testing.T) {
 	go handleCommandOutput(t, "error", cmdStdOutput, &emulatorExited)
 	go handleCommandOutput(t, "standard", cmdErrOutput, &emulatorExited)
 	select {
-	case <-handleEmulatorClosing(t, cmd):
+	case emulatorErr := <-handleEmulatorClosing(t, cmd):
 		emulatorExited = true
+		t.Logf("Datastore emulator exited before it was ready: %v", emulatorErr)
 	case <-waitForEmulatorReadiness(&emulatorExited):
 		if !emulatorExited {
 			runConformanceAgainstEmulator(t)
