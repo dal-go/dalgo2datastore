@@ -6,7 +6,7 @@ toolchain go1.27.4
 
 require (
 	cloud.google.com/go/datastore v1.28.1
-	github.com/dal-go/dalgo v0.102.6
+	github.com/dal-go/dalgo v0.103.1
 	github.com/dal-go/record v0.1.5
 	github.com/stretchr/testify v1.12.1
 	github.com/strongo/log v0.3.6
@@ -28,6 +28,7 @@ require (
 	github.com/google/s2a-go v0.1.11 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.25 // indirect
 	github.com/googleapis/gax-go/v2 v2.27.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
 	github.com/strongo/random v0.0.3 // indirect
 	github.com/strongo/validation v0.0.18 // indirect
