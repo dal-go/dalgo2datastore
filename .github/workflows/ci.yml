@@ -1,39 +1,37 @@
 name: Go CI
 
 on:
+  pull_request:
   push:
-    branches: ['**']
+    branches: [main]
     tags: ['v*.*.*']
 
 jobs:
-
   go_ci:
-    runs-on: ubuntu-latest
-    permissions: write-all
+    uses: strongo/cicd/.github/workflows/workflow.yml@55305a14a3ac17ee84001f9e0d3c74aca62ce2a0 # v1.26.1
+    permissions:
+      contents: write
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      go_version: '1.27.4'
+      build_command: |
+        set -euo pipefail
+        export JAVA_HOME="${JAVA_HOME_25_X64:?Datastore emulator requires Java 25}"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        printf 'JAVA_HOME=%s\n' "$JAVA_HOME" >> "$GITHUB_ENV"
+        printf '%s/bin\n' "$JAVA_HOME" >> "$GITHUB_PATH"
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Install Go
-        uses: actions/setup-go@v7
-        with:
-          go-version: '^1.20'
-
-      - name: Set up Java JRE 24
-        uses: actions/setup-java@v6
-        with:
-          java-version: '25'
-          java-package: 'jre'
-          distribution: 'temurin'
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
-        with:
-          install_components: 'beta,cloud-datastore-emulator'
-
-      - run: gcloud version
-
-      - uses: strongo/cicd@v1.25.2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        # The hosted image already has gcloud, but removes the apt source
+        # used to install it. Restore that source for the emulator component.
+        keyring="$RUNNER_TEMP/google-cloud-sdk.gpg"
+        curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg |
+          gpg --dearmor --output "$keyring"
+        sudo install -m 0644 "$keyring" /usr/share/keyrings/cloud.google.gpg
+        printf 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main\n' |
+          sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list >/dev/null
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends google-cloud-cli-datastore-emulator
+        gcloud version
+        gcloud beta emulators datastore start --help >/dev/null
+        go vet ./...
